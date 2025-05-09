@@ -1,10 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
-import authCoreAPI from "@/middleware/authCoreAPI";
+import { createTrackmaniaClient } from "@/lib/trackmania";
 
-export const fetchMapsFn = createServerFn({ method: "GET" })
-	.middleware([authCoreAPI])
-	.handler(async ({ context }) => {
-		console.log(await context.tokens);
+export const fetchMapFn = createServerFn({ method: "GET" }).handler(
+	async () => {
+		const trackmania = createTrackmaniaClient(
+			process.env.SERVER_ACCOUNT_CREDENTIALS ?? "",
+		);
 
-		// return { tokens: await context.tokens };
-	});
+		const mapInfo = await trackmania.getMapInfo();
+		console.log(mapInfo);
+		return mapInfo;
+	},
+);
