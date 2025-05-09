@@ -100,13 +100,15 @@ const createTrackmaniaClient = (
 		});
 	};
 
-	const trackmaniaClient = {
+	const tmCoreClient = {
 		getMapInfo: async () => {
 			const res = await client(
 				`https://prod.trackmania.core.nadeo.online/maps/${mapId}`,
 			);
 			return res.json();
 		},
+	};
+	const tmLiveMeetClient = {
 		getClub: async () => {
 			const res = await client(
 				`https://live-services.trackmania.nadeo.live/api/token/club/${clubId}`,
@@ -115,7 +117,7 @@ const createTrackmaniaClient = (
 		},
 	};
 
-	return trackmaniaClient;
+	return { tmCoreClient, tmLiveMeetClient };
 };
 
 export { createTrackmaniaClient };

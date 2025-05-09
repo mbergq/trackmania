@@ -3,16 +3,16 @@ import { createTrackmaniaClient } from "@/lib/trackmania";
 
 export const fetchMapFn = createServerFn({ method: "GET" }).handler(
 	async () => {
-		const trackmaniaCore = createTrackmaniaClient(
+		const { tmCoreClient } = createTrackmaniaClient(
 			process.env.SERVER_ACCOUNT_CREDENTIALS ?? "",
 			"NadeoServices",
 		);
-		const trackmaniaLiveMeet = createTrackmaniaClient(
+		const { tmLiveMeetClient } = createTrackmaniaClient(
 			process.env.SERVER_ACCOUNT_CREDENTIALS ?? "",
 			"NadeoLiveServices",
 		);
 
-		const test = await trackmaniaLiveMeet.getClub();
+		const test = await tmLiveMeetClient.getClub();
 		console.log(test);
 		return test;
 	},
