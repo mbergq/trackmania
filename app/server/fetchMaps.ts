@@ -8,7 +8,7 @@ export const fetchMapFn = createServerFn({ method: "GET" }).handler(
 		);
 
 		const mapInfo = await trackmania.getMapInfo();
-		console.log(mapInfo);
+		// console.log(mapInfo);
 		return mapInfo;
 	},
 );

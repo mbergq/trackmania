@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 const userAgent = process.env.USER_AGENT ?? "";
 
 // Test
@@ -37,7 +39,8 @@ const getTokens = async (apiKey: string) => {
 const getAccessToken = async (apiKey: string) => {
 	const { accessToken, accessTokenExpires } = credentialsCache;
 
-	if (accessToken && new Date() <= accessTokenExpires) {
+	if (accessToken && new Date(Date.now()) <= accessTokenExpires) {
+		console.log("--- Cache hit");
 		return credentialsCache.accessToken;
 	}
 
@@ -45,6 +48,18 @@ const getAccessToken = async (apiKey: string) => {
 
 	credentialsCache.accessToken = tokens.accessToken;
 	credentialsCache.refreshToken = tokens.refreshToken;
+
+	const decodeAccessToken = jwt.decode(tokens.accessToken) as jwt.JwtPayload;
+	const decodeRefreshToken = jwt.decode(tokens.refreshToken) as jwt.JwtPayload;
+	// Lazy TS fix
+	if (decodeAccessToken.exp && decodeRefreshToken.exp) {
+		credentialsCache.accessTokenExpires = new Date(
+			decodeAccessToken.exp * 1000,
+		);
+		credentialsCache.refreshTokenExpires = new Date(
+			decodeRefreshToken.exp * 1000,
+		);
+	}
 
 	return tokens.accessToken;
 };
