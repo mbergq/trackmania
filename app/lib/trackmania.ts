@@ -12,9 +12,11 @@ type CredentialsCache = {
 
 const credentialsCache: CredentialsCache = {
 	accessToken: undefined,
-	accessTokenExpires: new Date(Date.now() + 1),
+	// One hour in milliseconds
+	accessTokenExpires: new Date(Date.now() + 3600000),
 	refreshToken: undefined,
-	refreshTokenExpires: new Date(Date.now() + 24),
+	// 24 hours in milliseconds
+	refreshTokenExpires: new Date(Date.now() + 86400000),
 };
 
 const getTokens = async (apiKey: string) => {
