@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
 const userAgent = process.env.USER_AGENT ?? "";
+const ubiCredentials = process.env.UBI_CREDENTIALS ?? "";
 
 type JwtPayload = {
 	exp: number;
@@ -40,18 +41,35 @@ const credentialsCache: CredentialsCache = {
 	},
 };
 
+const getTicket = async () => {
+	const res = await fetch(
+		"https://public-ubiservices.ubi.com/v3/profiles/sessions",
+		{
+			method: "post",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Basic ${btoa(ubiCredentials)}`,
+				"User-Agent": userAgent,
+				"Ubi-AppId": "86263886-327a-4328-ac69-527f0d20a237",
+			},
+		},
+	);
+	const data = await res.json();
+	return data.ticket as { ticket: string };
+};
+
 const getTokens = async (
 	apiKey: string,
 	audience: "NadeoServices" | "NadeoLiveServices",
 ) => {
 	const res = await fetch(
-		"https://prod.trackmania.core.nadeo.online/v2/authentication/token/basic",
+		"https://prod.trackmania.core.nadeo.online/v2/authentication/token/ubiservices",
 		{
 			method: "post",
 			headers: {
-				Authorization: `Basic ${btoa(apiKey)}`,
-				"User-Agent": userAgent,
 				"Content-Type": "application/json",
+				Authorization: `ubi_v1 t=${await getTicket()}`,
+				"User-Agent": userAgent,
 			},
 			body: JSON.stringify({ audience: audience }),
 		},
@@ -92,8 +110,8 @@ const createTrackmaniaClient = (
 	const client = async (url: string, options?: RequestInit) => {
 		return fetch(url, {
 			headers: {
-				Authorization: `nadeo_v1 t=${await getAccessToken(apiKey, audience)}`,
 				"Content-Type": "application/json",
+				Authorization: `nadeo_v1 t=${await getAccessToken(apiKey, audience)}`,
 				...options?.headers,
 			},
 			...options,
