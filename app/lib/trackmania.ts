@@ -109,6 +109,15 @@ const createTrackmaniaClient = (
 		},
 	};
 	const tmLiveMeetClient = {
+		getCOTD: async () => {
+			const res = await client(
+				"https://meet.trackmania.nadeo.club/api/cup-of-the-day/current",
+			);
+			if (res.status === 204) {
+				throw new Error("No COTD ongoing");
+			}
+			return res.json();
+		},
 		getClub: async () => {
 			const res = await client(
 				`https://live-services.trackmania.nadeo.live/api/token/club/${clubId}`,

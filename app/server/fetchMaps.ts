@@ -14,6 +14,8 @@ export const fetchMapFn = createServerFn({ method: "GET" }).handler(
 
 		const test = await tmLiveMeetClient.getClub();
 		console.log(test);
-		return test;
+		// const COTD = await tmLiveMeetClient.getCOTD();
+		// console.log(COTD);
+		// return COTD;
 	},
 );
