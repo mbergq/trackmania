@@ -1,4 +1,6 @@
 import jwt from "jsonwebtoken";
+import { accountId } from "@/constants";
+import type { Records } from "@/types";
 
 const userAgent = process.env.USER_AGENT ?? "";
 const ubiCredentials = process.env.UBI_CREDENTIALS ?? "";
@@ -6,10 +8,6 @@ const ubiCredentials = process.env.UBI_CREDENTIALS ?? "";
 type JwtPayload = {
 	exp: number;
 };
-
-// Test
-const mapId = "f6028124-f625-4037-96fd-1d8afcb3938c";
-const clubId = "67811";
 
 type CredentialsCache = {
 	ticket: {
@@ -131,7 +129,14 @@ const createTrackmaniaClient = (
 	};
 
 	const tmCoreClient = {
-		getMapInfo: async () => {
+		getRecords: async () => {
+			const res = await client(
+				`https://prod.trackmania.core.nadeo.online/v2/accounts/${accountId}/mapRecords`,
+			);
+			const data: Promise<Records> = res.json();
+			return data;
+		},
+		getMapInfo: async (mapId: string) => {
 			const res = await client(
 				`https://prod.trackmania.core.nadeo.online/maps/${mapId}`,
 			);
@@ -146,12 +151,6 @@ const createTrackmaniaClient = (
 			if (res.status === 204) {
 				throw new Error("No COTD ongoing");
 			}
-			return res.json();
-		},
-		getClub: async () => {
-			const res = await client(
-				`https://live-services.trackmania.nadeo.live/api/token/club/${clubId}`,
-			);
 			return res.json();
 		},
 	};

@@ -1,26 +1,32 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { fetchMapFn } from "@/server/fetchMaps";
-import { fetchTestFn } from "@/server/fetchTest";
+import { getRecordsFn } from "@/server/getRecords";
 import { useServerFn } from "@tanstack/react-start";
+import { getMapInfoFn } from "@/server/getMapInfo";
 
 export const Route = createFileRoute("/(app)/")({
 	component: RouteComponent,
-	// beforeLoad
 	loader: async () => {
-		const data = await fetchMapFn();
-		return data;
+		const records = await getRecordsFn();
+		return { records };
 	},
 });
 
 function RouteComponent() {
-	// const data = Route.useLoaderData();
-	const fetchTest = useServerFn(fetchTestFn);
+	const { records } = Route.useLoaderData();
+	const getMapInfo = useServerFn(getMapInfoFn);
+	// console.log(records);
 	return (
 		<div>
 			Hello "/(app)/"!
-			<button type="button" onClick={() => fetchTest()}>
-				Click me
-			</button>
+			{records?.map((record) => (
+				<button
+					type="button"
+					key={record.mapId}
+					onClick={() => getMapInfo({ data: { mapId: record.mapId } })}
+				>
+					<p>{record.mapId}</p>
+				</button>
+			))}
 		</div>
 	);
 }
