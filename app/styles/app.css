@@ -9,6 +9,10 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --color-background: var(--background);
+  --color-background-white: var(--background-white);
+  --color-background-blue: var(--background-blue);
+  --color-tm-green: var(--tm-green);
+  --color-tm-blue: var(--tm-blue);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -45,6 +49,10 @@
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+  --background-white: oklch(99% 5% 158deg);
+  --background-blue: oklch(40% 28% 252deg);
+  --tm-green: oklch(89% 44% 153deg);
+  --tm-blue: oklch(63% 51% 255deg);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -79,6 +87,10 @@
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
+  --background-white: oklch(99% 5% 158deg);
+  --background-blue: oklch(40% 28% 252deg);
+  --tm-green: oklch(89% 44% 153deg);
+  --tm-blue: oklch(63% 51% 255deg);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
