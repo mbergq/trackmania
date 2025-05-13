@@ -12,6 +12,10 @@ const mapId = "f6028124-f625-4037-96fd-1d8afcb3938c";
 const clubId = "67811";
 
 type CredentialsCache = {
+	ticket: {
+		value: string | undefined;
+		expiration: Date;
+	};
 	NadeoServices: {
 		accessToken: string | undefined;
 		accessTokenExpires: Date;
@@ -27,6 +31,10 @@ type CredentialsCache = {
 };
 
 const credentialsCache: CredentialsCache = {
+	ticket: {
+		value: undefined,
+		expiration: new Date(Date.now() + 3300000),
+	},
 	NadeoServices: {
 		accessToken: undefined,
 		accessTokenExpires: new Date(Date.now() + 3600000),
@@ -42,6 +50,13 @@ const credentialsCache: CredentialsCache = {
 };
 
 const getTicket = async () => {
+	const { ticket } = credentialsCache;
+
+	if (ticket.value && new Date(Date.now()) <= ticket.expiration) {
+		console.log("--- Cache hit for ticket");
+		return ticket.value;
+	}
+
 	const res = await fetch(
 		"https://public-ubiservices.ubi.com/v3/profiles/sessions",
 		{
@@ -55,13 +70,12 @@ const getTicket = async () => {
 		},
 	);
 	const data = await res.json();
+	ticket.value = data.ticket;
+
 	return data.ticket as { ticket: string };
 };
 
-const getTokens = async (
-	apiKey: string,
-	audience: "NadeoServices" | "NadeoLiveServices",
-) => {
+const getTokens = async (audience: "NadeoServices" | "NadeoLiveServices") => {
 	const res = await fetch(
 		"https://prod.trackmania.core.nadeo.online/v2/authentication/token/ubiservices",
 		{
@@ -78,17 +92,16 @@ const getTokens = async (
 };
 
 const getAccessToken = async (
-	apiKey: string,
 	audience: "NadeoServices" | "NadeoLiveServices",
 ) => {
 	const { accessToken, accessTokenExpires } = credentialsCache[audience];
 
 	if (accessToken && new Date(Date.now()) <= accessTokenExpires) {
-		console.log("--- Cache hit");
+		console.log("--- Cache hit for token");
 		return accessToken;
 	}
 
-	const tokens = await getTokens(apiKey, audience);
+	const tokens = await getTokens(audience);
 
 	const decodeAccessToken = jwt.decode(tokens.accessToken) as JwtPayload;
 	const decodeRefreshToken = jwt.decode(tokens.refreshToken) as JwtPayload;
@@ -104,14 +117,13 @@ const getAccessToken = async (
 };
 
 const createTrackmaniaClient = (
-	apiKey: string,
 	audience: "NadeoServices" | "NadeoLiveServices",
 ) => {
 	const client = async (url: string, options?: RequestInit) => {
 		return fetch(url, {
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: `nadeo_v1 t=${await getAccessToken(apiKey, audience)}`,
+				Authorization: `nadeo_v1 t=${await getAccessToken(audience)}`,
 				...options?.headers,
 			},
 			...options,
