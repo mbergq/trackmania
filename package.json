@@ -23,6 +23,7 @@
 		"@tailwindcss/postcss": "^4.1.5",
 		"@tanstack/react-router": "^1.119.0",
 		"@tanstack/react-start": "^1.119.2",
+		"@tanstack/react-table": "^8.21.3",
 		"@types/jsonwebtoken": "^9.0.9",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",

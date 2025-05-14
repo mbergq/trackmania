@@ -7,6 +7,7 @@ export const Route = createFileRoute("/(app)")({
 function RouteComponent() {
 	return (
 		<>
+			<h1 className="text-xl text-center">Trackmania</h1>
 			<header className="bg-background-white">
 				<nav>
 					<Link to="/">Home</Link>
