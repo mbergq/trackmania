@@ -135,7 +135,8 @@ const createTrackmaniaClient = (
 			);
 			const data: Promise<Records> = res.json();
 			console.log("--- getRecords executed");
-			return data;
+			console.log("Length of records:", (await data).length);
+			return { responseData: await data, numberOfRecords: (await data).length };
 		},
 		getMapInfo: async (mapId: string) => {
 			const res = await client(
@@ -147,8 +148,9 @@ const createTrackmaniaClient = (
 			const res = await client(
 				`https://prod.trackmania.core.nadeo.online/maps/?mapIdList=${mapIds}`,
 			);
-			const data: Promise<MapsInfo> = await res.json();
-			return data;
+			const data: Promise<MapsInfo> = res.json();
+			console.log("Length of mapsInfo:", (await data).length);
+			return { responseData: await data };
 		},
 	};
 	const tmLiveMeetClient = {
