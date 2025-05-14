@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { accountId } from "@/constants";
-import type { Records } from "@/types";
+import type { MapsInfo, Records } from "@/types";
 
 const userAgent = process.env.USER_AGENT ?? "";
 const ubiCredentials = process.env.UBI_CREDENTIALS ?? "";
@@ -134,6 +134,7 @@ const createTrackmaniaClient = (
 				`https://prod.trackmania.core.nadeo.online/v2/accounts/${accountId}/mapRecords`,
 			);
 			const data: Promise<Records> = res.json();
+			console.log("--- getRecords executed");
 			return data;
 		},
 		getMapInfo: async (mapId: string) => {
@@ -141,6 +142,13 @@ const createTrackmaniaClient = (
 				`https://prod.trackmania.core.nadeo.online/maps/${mapId}`,
 			);
 			return res.json();
+		},
+		getMapsInfo: async (mapIds: string) => {
+			const res = await client(
+				`https://prod.trackmania.core.nadeo.online/maps/?mapIdList=${mapIds}`,
+			);
+			const data: Promise<MapsInfo> = await res.json();
+			return data;
 		},
 	};
 	const tmLiveMeetClient = {
