@@ -1,18 +1,25 @@
 import { getMapInfoFn } from "@/server/getMapInfo";
-import { getRecordsFn } from "@/server/getRecords";
+import { getMapsInfoFn } from "@/server/getMapsinfo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
 	createColumnHelper,
 	flexRender,
 	getCoreRowModel,
+	getPaginationRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/(app)/records")({
 	component: RouteComponent,
 	loader: async () => {
-		const data = await getRecordsFn();
+		const data = await getMapsInfoFn({
+			data: {
+				start: 0,
+				end: 50,
+			},
+		});
 		return { data };
 	},
 });
@@ -37,31 +44,48 @@ type Record = {
 	url: string;
 };
 
-function RouteComponent() {
-	const { data } = Route.useLoaderData();
-	const getMapInfo = useServerFn(getMapInfoFn);
-	const columnHelper = createColumnHelper<Record>();
+type MapInfo = {
+	author: string;
+	authorScore: number;
+	bronzeScore: number;
+	collectionName: string;
+	createdWithGamepadEditor: boolean;
+	createdWithSimpleEditor: boolean;
+	fileUrl: string;
+	filename: string;
+	goldScore: number;
+	isPlayable: boolean;
+	mapId: string;
+	mapStyle: string;
+	mapType: string;
+	mapUid: string;
+	name: string;
+	silverScore: number;
+	submitter: string;
+	thumbnailUrl: string;
+	timestamp: Date;
+};
 
+function RouteComponent() {
+	const { data: initialData } = Route.useLoaderData();
+	const [data, setData] = useState(initialData.maps.responseData);
+	const getMapInfo = useServerFn(getMapInfoFn);
+	const getMaps = useServerFn(getMapsInfoFn);
+
+	const columnHelper = createColumnHelper<MapInfo>();
 	const columns = [
-		columnHelper.accessor("accountId", {
+		columnHelper.accessor("name", {
 			cell: (info) => info.getValue(),
 			footer: (info) => info.column.id,
 		}),
-		columnHelper.accessor("mapId", {
-			header: () => "MapId:",
-			cell: (info) => info.renderValue(),
+		columnHelper.accessor("authorScore", {
+			cell: (info) => info.getValue(),
 			footer: (info) => info.column.id,
 		}),
-		columnHelper.accessor("gameMode", {
-			header: () => <span>Game mode</span>,
-			footer: (info) => info.column.id,
-		}),
-		columnHelper.accessor("recordScore", {
-			header: "Record score",
-			footer: (info) => info.column.id,
-		}),
-		columnHelper.accessor("removed", {
-			header: "Removed",
+		columnHelper.accessor("thumbnailUrl", {
+			cell: (info) => (
+				<img className="w-20 h-20" alt="thumbnail" src={info.getValue()} />
+			),
 			footer: (info) => info.column.id,
 		}),
 	];
@@ -70,11 +94,40 @@ function RouteComponent() {
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
 	});
 
 	return (
 		<div>
 			Hello "/(app)/records"!
+			<button
+				type="button"
+				onClick={async () => {
+					table.nextPage();
+				}}
+			>
+				Next
+			</button>
+			<button
+				type="button"
+				onClick={async () => {
+					table.previousPage();
+				}}
+			>
+				Previous
+			</button>
+			<select
+				value={table.getState().pagination.pageSize}
+				onChange={(e) => {
+					table.setPageSize(Number(e.target.value));
+				}}
+			>
+				{[10, 20, 30, 40, 50].map((pageSize) => (
+					<option key={pageSize} value={pageSize}>
+						{pageSize}
+					</option>
+				))}
+			</select>
 			<table>
 				<thead>
 					{table.getHeaderGroups().map((headerGroup) => (
