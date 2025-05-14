@@ -14,4 +14,26 @@ type Records = {
 	url: string;
 }[];
 
-export type { Records };
+type MapsInfo = {
+	author: string;
+	authorScore: number;
+	bronzeScore: number;
+	collectionName: string;
+	createdWithGamepadEditor: boolean;
+	createdWithSimpleEditor: boolean;
+	fileUrl: string;
+	filename: string;
+	goldScore: number;
+	isPlayable: boolean;
+	mapId: string;
+	mapStyle: string;
+	mapType: string;
+	mapUid: string;
+	name: string;
+	silverScore: number;
+	submitter: string;
+	thumbnailUrl: string;
+	timestamp: Date;
+}[];
+
+export type { Records, MapsInfo };
