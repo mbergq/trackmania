@@ -9,17 +9,11 @@ import {
 	getPaginationRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/(app)/records")({
 	component: RouteComponent,
 	loader: async () => {
-		const data = await getMapsInfoFn({
-			data: {
-				start: 0,
-				end: 50,
-			},
-		});
+		const data = await getMapsInfoFn();
 		return { data };
 	},
 });
@@ -67,10 +61,8 @@ type MapInfo = {
 };
 
 function RouteComponent() {
-	const { data: initialData } = Route.useLoaderData();
-	const [data, setData] = useState(initialData.maps.responseData);
+	const { data } = Route.useLoaderData();
 	const getMapInfo = useServerFn(getMapInfoFn);
-	const getMaps = useServerFn(getMapsInfoFn);
 
 	const columnHelper = createColumnHelper<MapInfo>();
 	const columns = [
