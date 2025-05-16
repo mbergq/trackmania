@@ -3,9 +3,9 @@
 	"module": "index.ts",
 	"type": "module",
 	"scripts": {
-		"dev": "vinxi dev",
-		"build": "vinxi build",
-		"start": "vinxi start"
+		"dev": "bunx --bun vinxi dev",
+		"build": "bunx --bun vinxi build",
+		"start": "bunx --bun vinxi start"
 	},
 	"private": true,
 	"devDependencies": {
