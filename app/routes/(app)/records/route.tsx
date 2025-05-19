@@ -11,6 +11,10 @@ import {
 	getPaginationRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import authorMedal from "@/assets/medals/medal_author.png";
+import goldMedal from "@/assets/medals/medal_gold.png";
+import silverMedal from "@/assets/medals/medal_silver.png";
+import bronzeMedal from "@/assets/medals/medal_bronze.png";
 
 export const Route = createFileRoute("/(app)/records")({
 	component: RouteComponent,
@@ -24,6 +28,22 @@ function RouteComponent() {
 	const { data } = Route.useLoaderData();
 	const getMapInfo = useServerFn(getMapInfoFn);
 	const columnHelper = createColumnHelper<MapInfo>();
+
+	const createMedalAccessor = (
+		accessorKey: "authorScore" | "goldScore" | "silverScore" | "bronzeScore",
+		medalImg: string,
+		medalAlt: string,
+	) => {
+		return columnHelper.accessor(accessorKey, {
+			cell: (info) => (
+				<div className="flex flex-row items-center gap-x-1">
+					<img className="w-6 h-6" src={medalImg} alt={medalAlt} />
+					{formatTime(info.getValue())}
+				</div>
+			),
+		});
+	};
+
 	const columns = [
 		columnHelper.accessor("thumbnailUrl", {
 			cell: (info) => (
@@ -46,6 +66,15 @@ function RouteComponent() {
 											color: segment.color,
 											fontWeight: segment.styles.bold ? "bold" : "normal",
 											fontStyle: segment.styles.italic ? "italic" : "normal",
+											fontStretch: segment.styles.wide
+												? "expanded"
+												: segment.styles.narrow
+													? "condensed"
+													: "normal",
+											textShadow: segment.styles.shadow ? "" : "none",
+											fontVariant: segment.styles.narrow
+												? "small-caps"
+												: "normal",
 											textTransform: segment.styles.uppercase
 												? "uppercase"
 												: "none",
@@ -64,18 +93,10 @@ function RouteComponent() {
 			id: "Medals",
 			header: () => <span>Medals</span>,
 			columns: [
-				columnHelper.accessor("authorScore", {
-					cell: (info) => formatTime(info.getValue()),
-				}),
-				columnHelper.accessor("goldScore", {
-					cell: (info) => formatTime(info.getValue()),
-				}),
-				columnHelper.accessor("silverScore", {
-					cell: (info) => formatTime(info.getValue()),
-				}),
-				columnHelper.accessor("bronzeScore", {
-					cell: (info) => formatTime(info.getValue()),
-				}),
+				createMedalAccessor("authorScore", authorMedal, "Author"),
+				createMedalAccessor("goldScore", goldMedal, "Gold"),
+				createMedalAccessor("silverScore", silverMedal, "Silver"),
+				createMedalAccessor("bronzeScore", bronzeMedal, "Bronze"),
 			],
 		}),
 		columnHelper.accessor("timestamp", {
@@ -108,13 +129,13 @@ function RouteComponent() {
 			>
 				Next
 			</button>
-			<div className="p-2">
+			<div className="p-2 border">
 				<table>
-					<thead>
+					<thead className="border">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<tr key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
-									<th key={header.id}>
+									<th key={header.id} className="border">
 										{header.isPlaceholder
 											? null
 											: flexRender(
@@ -130,34 +151,15 @@ function RouteComponent() {
 						{table.getRowModel().rows.map((row) => (
 							<tr key={row.id}>
 								{row.getVisibleCells().map((cell) => (
-									<td key={cell.id}>
+									<td key={cell.id} className="border border-tm-white">
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</td>
 								))}
 							</tr>
 						))}
 					</tbody>
-					{/* <tfoot>
-						{table.getFooterGroups().map((footerGroup) => (
-							<tr key={footerGroup.id}>
-								{footerGroup.headers.map((header) => (
-									<th key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.footer,
-													header.getContext(),
-												)}
-									</th>
-								))}
-							</tr>
-						))}
-					</tfoot> */}
 				</table>
 				<div className="h-4" />
-				{/* <button type="button" onClick={() => rerender()} className="border p-2">
-					Rerender
-				</button> */}
 			</div>
 		</div>
 	);
