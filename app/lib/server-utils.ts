@@ -1,11 +1,5 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { db } from "./db";
 import type { MapsInfo } from "@/types";
-
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
 
 export const reformatIds = (ids: string[], start: number, end: number) => {
 	return ids
@@ -70,11 +64,4 @@ export const getRanges = (
 		ranges.push({ start, end });
 	}
 	return ranges;
-};
-
-export const formatTime = (time: number): string => {
-	const minutes = Math.floor(time / 60000);
-	const seconds = Math.floor((time % 60000) / 1000);
-	const milliseconds = Math.floor((time % 1000) / 10);
-	return `${minutes}:${seconds.toString().padStart(2, "0")}.${milliseconds.toString().padStart(2, "0")}`;
 };
