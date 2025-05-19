@@ -1,5 +1,7 @@
+import { formatTime } from "@/lib/utils";
 import { getMapInfoFn } from "@/server/getMapInfo";
 import { getMapsInfoFn } from "@/server/getMapsinfo";
+import type { MapInfo } from "@/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -18,48 +20,6 @@ export const Route = createFileRoute("/(app)/records")({
 	},
 });
 
-type Record = {
-	accountId: string;
-	fileName: string;
-	gameMode: string;
-	gameModeCustomData: string;
-	mapId: string;
-	mapRecordId: string;
-	medal: number;
-	recordScore: {
-		respawnCount: number;
-		score: number;
-		time: number;
-	};
-	removed: boolean;
-	scopeId: null;
-	scopeType: string;
-	timestamp: Date;
-	url: string;
-};
-
-type MapInfo = {
-	author: string;
-	authorScore: number;
-	bronzeScore: number;
-	collectionName: string;
-	createdWithGamepadEditor: boolean;
-	createdWithSimpleEditor: boolean;
-	fileUrl: string;
-	filename: string;
-	goldScore: number;
-	isPlayable: boolean;
-	mapId: string;
-	mapStyle: string;
-	mapType: string;
-	mapUid: string;
-	name: string;
-	silverScore: number;
-	submitter: string;
-	thumbnailUrl: string;
-	timestamp: Date;
-};
-
 function RouteComponent() {
 	const { data } = Route.useLoaderData();
 	const getMapInfo = useServerFn(getMapInfoFn);
@@ -68,17 +28,26 @@ function RouteComponent() {
 	const columns = [
 		columnHelper.accessor("name", {
 			cell: (info) => info.getValue(),
-			footer: (info) => info.column.id,
 		}),
 		columnHelper.accessor("authorScore", {
-			cell: (info) => info.getValue(),
-			footer: (info) => info.column.id,
+			cell: (info) => formatTime(info.getValue()),
+		}),
+		columnHelper.accessor("goldScore", {
+			cell: (info) => formatTime(info.getValue()),
+		}),
+		columnHelper.accessor("silverScore", {
+			cell: (info) => formatTime(info.getValue()),
+		}),
+		columnHelper.accessor("bronzeScore", {
+			cell: (info) => formatTime(info.getValue()),
+		}),
+		columnHelper.accessor("timestamp", {
+			cell: (info) => new Date(info.getValue() * 1000).toLocaleString(),
 		}),
 		columnHelper.accessor("thumbnailUrl", {
 			cell: (info) => (
 				<img className="w-20 h-20" alt="thumbnail" src={info.getValue()} />
 			),
-			footer: (info) => info.column.id,
 		}),
 	];
 
@@ -91,15 +60,6 @@ function RouteComponent() {
 
 	return (
 		<div>
-			Hello "/(app)/records"!
-			<button
-				type="button"
-				onClick={async () => {
-					table.nextPage();
-				}}
-			>
-				Next
-			</button>
 			<button
 				type="button"
 				onClick={async () => {
@@ -108,63 +68,65 @@ function RouteComponent() {
 			>
 				Previous
 			</button>
-			<select
-				value={table.getState().pagination.pageSize}
-				onChange={(e) => {
-					table.setPageSize(Number(e.target.value));
+			<button
+				type="button"
+				onClick={async () => {
+					table.nextPage();
 				}}
 			>
-				{[10, 20, 30, 40, 50].map((pageSize) => (
-					<option key={pageSize} value={pageSize}>
-						{pageSize}
-					</option>
-				))}
-			</select>
-			<table>
-				<thead>
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th key={header.id}>
-									{header.isPlaceholder
-										? null
-										: flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-											)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id}>
-							{row.getVisibleCells().map((cell) => (
-								<td key={cell.id}>
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
-								</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-				<tfoot>
-					{table.getFooterGroups().map((footerGroup) => (
-						<tr key={footerGroup.id}>
-							{footerGroup.headers.map((header) => (
-								<th key={header.id}>
-									{header.isPlaceholder
-										? null
-										: flexRender(
-												header.column.columnDef.footer,
-												header.getContext(),
-											)}
-								</th>
-							))}
-						</tr>
-					))}
-				</tfoot>
-			</table>
+				Next
+			</button>
+			<div className="p-2">
+				<table>
+					<thead>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<tr key={headerGroup.id}>
+								{headerGroup.headers.map((header) => (
+									<th key={header.id}>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
+									</th>
+								))}
+							</tr>
+						))}
+					</thead>
+					<tbody>
+						{table.getRowModel().rows.map((row) => (
+							<tr key={row.id}>
+								{row.getVisibleCells().map((cell) => (
+									<td key={cell.id}>
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</td>
+								))}
+							</tr>
+						))}
+					</tbody>
+					<tfoot>
+						{table.getFooterGroups().map((footerGroup) => (
+							<tr key={footerGroup.id}>
+								{footerGroup.headers.map((header) => (
+									<th key={header.id}>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.footer,
+													header.getContext(),
+												)}
+									</th>
+								))}
+							</tr>
+						))}
+					</tfoot>
+				</table>
+				<div className="h-4" />
+				{/* <button type="button" onClick={() => rerender()} className="border p-2">
+					Rerender
+				</button> */}
+			</div>
 		</div>
 	);
 }

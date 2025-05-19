@@ -33,7 +33,7 @@ type DBMapsInfo = {
 	silver_score: number;
 	submitter: string;
 	thumbnail_url: string;
-	timestamp: Date;
+	timestamp: number;
 }[];
 
 type MapsInfo = {
@@ -58,4 +58,27 @@ type MapsInfo = {
 	timestamp: Date;
 }[];
 
-export type { Records, MapsInfo, DBMapsInfo };
+// Used for client when creating table with TanStack Table
+type MapInfo = {
+	author: string;
+	authorScore: number;
+	bronzeScore: number;
+	collectionName: string;
+	createdWithGamepadEditor: boolean;
+	createdWithSimpleEditor: boolean;
+	fileUrl: string;
+	filename: string;
+	goldScore: number;
+	isPlayable: boolean;
+	mapId: string;
+	mapStyle: string;
+	mapType: string;
+	mapUid: string;
+	name: string;
+	silverScore: number;
+	submitter: string;
+	thumbnailUrl: string;
+	timestamp: number;
+};
+
+export type { Records, MapsInfo, DBMapsInfo, MapInfo };

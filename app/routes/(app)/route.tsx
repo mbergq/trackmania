@@ -14,7 +14,7 @@ function RouteComponent() {
 					<Link to="/records">Records</Link>
 				</nav>
 			</header>
-			<div className="flex flex-row h-dvh">
+			<div className="flex flex-col h-dvh">
 				<Outlet />
 			</div>
 		</>
