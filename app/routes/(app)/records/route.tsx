@@ -1,4 +1,4 @@
-import { formatTime } from "@/lib/utils";
+import { formatTime, parseTrackmaniaStyledText } from "@/lib/client-utils";
 import { getMapInfoFn } from "@/server/getMapInfo";
 import { getMapsInfoFn } from "@/server/getMapsinfo";
 import type { MapInfo } from "@/types";
@@ -23,31 +23,63 @@ export const Route = createFileRoute("/(app)/records")({
 function RouteComponent() {
 	const { data } = Route.useLoaderData();
 	const getMapInfo = useServerFn(getMapInfoFn);
-
 	const columnHelper = createColumnHelper<MapInfo>();
 	const columns = [
-		columnHelper.accessor("name", {
-			cell: (info) => info.getValue(),
+		columnHelper.accessor("thumbnailUrl", {
+			cell: (info) => (
+				<img className="w-28 h-28" src={info.getValue()} alt="thumbnail" />
+			),
 		}),
-		columnHelper.accessor("authorScore", {
-			cell: (info) => formatTime(info.getValue()),
+		columnHelper.group({
+			id: "Name",
+			header: () => <span>Name</span>,
+			columns: [
+				columnHelper.accessor("name", {
+					cell: (info) => {
+						const segments = parseTrackmaniaStyledText(info.getValue());
+						return (
+							<span>
+								{segments.map((segment) => (
+									<span
+										key={segment.color + segment.text}
+										style={{
+											color: segment.color,
+											fontWeight: segment.styles.bold ? "bold" : "normal",
+											fontStyle: segment.styles.italic ? "italic" : "normal",
+											textTransform: segment.styles.uppercase
+												? "uppercase"
+												: "none",
+										}}
+									>
+										{segment.text}
+									</span>
+								))}
+							</span>
+						);
+					},
+				}),
+			],
 		}),
-		columnHelper.accessor("goldScore", {
-			cell: (info) => formatTime(info.getValue()),
-		}),
-		columnHelper.accessor("silverScore", {
-			cell: (info) => formatTime(info.getValue()),
-		}),
-		columnHelper.accessor("bronzeScore", {
-			cell: (info) => formatTime(info.getValue()),
+		columnHelper.group({
+			id: "Medals",
+			header: () => <span>Medals</span>,
+			columns: [
+				columnHelper.accessor("authorScore", {
+					cell: (info) => formatTime(info.getValue()),
+				}),
+				columnHelper.accessor("goldScore", {
+					cell: (info) => formatTime(info.getValue()),
+				}),
+				columnHelper.accessor("silverScore", {
+					cell: (info) => formatTime(info.getValue()),
+				}),
+				columnHelper.accessor("bronzeScore", {
+					cell: (info) => formatTime(info.getValue()),
+				}),
+			],
 		}),
 		columnHelper.accessor("timestamp", {
 			cell: (info) => new Date(info.getValue() * 1000).toLocaleString(),
-		}),
-		columnHelper.accessor("thumbnailUrl", {
-			cell: (info) => (
-				<img className="w-20 h-20" alt="thumbnail" src={info.getValue()} />
-			),
 		}),
 	];
 
@@ -105,7 +137,7 @@ function RouteComponent() {
 							</tr>
 						))}
 					</tbody>
-					<tfoot>
+					{/* <tfoot>
 						{table.getFooterGroups().map((footerGroup) => (
 							<tr key={footerGroup.id}>
 								{footerGroup.headers.map((header) => (
@@ -120,7 +152,7 @@ function RouteComponent() {
 								))}
 							</tr>
 						))}
-					</tfoot>
+					</tfoot> */}
 				</table>
 				<div className="h-4" />
 				{/* <button type="button" onClick={() => rerender()} className="border p-2">

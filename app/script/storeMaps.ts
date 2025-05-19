@@ -1,6 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { tmCoreClient } from "@/constants";
-import { insertMapsIntoDatabase, reformatIds, getRanges } from "@/lib/utils";
+import {
+	insertMapsIntoDatabase,
+	reformatIds,
+	getRanges,
+} from "@/lib/server-utils";
 
 export const storeMapsFn = createServerFn({ method: "GET" }).handler(
 	async () => {
