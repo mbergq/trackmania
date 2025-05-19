@@ -14,6 +14,28 @@ type Records = {
 	url: string;
 }[];
 
+type DBMapsInfo = {
+	author: string;
+	author_score: number;
+	bronze_score: number;
+	collection_name: string;
+	created_with_gamepad_editor: boolean;
+	created_with_simple_editor: boolean;
+	file_url: string;
+	filename: string;
+	gold_score: number;
+	is_playable: boolean;
+	map_id: string;
+	map_style: string;
+	map_type: string;
+	map_uid: string;
+	name: string;
+	silver_score: number;
+	submitter: string;
+	thumbnail_url: string;
+	timestamp: Date;
+}[];
+
 type MapsInfo = {
 	author: string;
 	authorScore: number;
@@ -36,4 +58,4 @@ type MapsInfo = {
 	timestamp: Date;
 }[];
 
-export type { Records, MapsInfo };
+export type { Records, MapsInfo, DBMapsInfo };
