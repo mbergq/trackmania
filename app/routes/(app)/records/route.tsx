@@ -1,5 +1,6 @@
 import { formatTime, parseTrackmaniaStyledText } from "@/lib/client-utils";
 import { getMapInfoFn } from "@/server/getMapInfo";
+import { getMapRecordsFn } from "@/server/getMapRecords";
 import { getMapsInfoFn } from "@/server/getMapsinfo";
 import type { MapInfo } from "@/types";
 import { createFileRoute } from "@tanstack/react-router";
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/(app)/records")({
 function RouteComponent() {
 	const { data } = Route.useLoaderData();
 	const getMapInfo = useServerFn(getMapInfoFn);
+	const getMapRecords = useServerFn(getMapRecordsFn);
 	const columnHelper = createColumnHelper<MapInfo>();
 
 	const createMedalAccessor = (
@@ -152,7 +154,20 @@ function RouteComponent() {
 							>
 								{row.getVisibleCells().map((cell) => (
 									<td key={cell.id} className="px-4 py-2">
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+										<button
+											type="button"
+											className="w-full h-full text-left"
+											onClick={() =>
+												getMapRecords({
+													data: { mapId: cell.row.original.mapId },
+												})
+											}
+										>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</button>
 									</td>
 								))}
 							</tr>

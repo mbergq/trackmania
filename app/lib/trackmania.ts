@@ -1,9 +1,11 @@
 import jwt from "jsonwebtoken";
 import { accountId } from "@/constants";
-import type { MapsInfo, Records } from "@/types";
+import type { MapRecords, MapsInfo, Records } from "@/types";
 
 const userAgent = process.env.USER_AGENT ?? "";
 const ubiCredentials = process.env.UBI_CREDENTIALS ?? "";
+// Will add another account here later
+const accountIdList = process.env.ACCOUNT_ID ?? "";
 
 type JwtPayload = {
 	exp: number;
@@ -149,6 +151,15 @@ const createTrackmaniaClient = (
 			);
 			const data: Promise<MapsInfo> = res.json();
 			console.log("Length of mapsInfo:", (await data).length);
+			return { responseData: await data };
+		},
+		getMapRecords: async (mapId: string) => {
+			const res = await client(
+				`https://prod.trackmania.core.nadeo.online/v2/mapRecords/?accountIdList=${accountIdList}&mapId=${mapId}`,
+			);
+			const data: Promise<MapRecords> = res.json();
+			console.log("--- getMapRecords executed");
+			console.log(data);
 			return { responseData: await data };
 		},
 	};

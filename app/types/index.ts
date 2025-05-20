@@ -81,4 +81,24 @@ type MapInfo = {
 	timestamp: number;
 };
 
-export type { Records, MapsInfo, DBMapsInfo, MapInfo };
+type MapRecords = {
+	accountId: string;
+	filename: string;
+	gameMode: string;
+	gameModeCustomData: string;
+	mapId: string;
+	mapRecordId: string;
+	medal: number;
+	recordScore: {
+		respawnCount: number;
+		score: number;
+		time: number;
+	};
+	removed: boolean;
+	scopeId: null;
+	scopeType: string;
+	timestamp: string;
+	url: string;
+}[];
+
+export type { Records, MapsInfo, DBMapsInfo, MapInfo, MapRecords };
