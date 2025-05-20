@@ -27,6 +27,7 @@ export const getMapsInfoFn = createServerFn({ method: "GET" }).handler(
 				thumbnail_url,
 				timestamp
 			FROM maps
+			ORDER BY timestamp DESC
 		`)
 			.all() as DBMapsInfo;
 
@@ -49,10 +50,12 @@ export const getMapsInfoFn = createServerFn({ method: "GET" }).handler(
 			silverScore: x.silver_score,
 			submitter: x.submitter,
 			thumbnailUrl: x.thumbnail_url,
-			timestamp: x.timestamp,
+			timestamp: new Date(x.timestamp * 1000).toLocaleString("sv", {
+				dateStyle: "short",
+				timeStyle: "short",
+			}) as unknown as number,
 		}));
-
-		console.log(data);
+		// console.log(data);
 		return data;
 	},
 );

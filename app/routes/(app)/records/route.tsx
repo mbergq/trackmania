@@ -31,12 +31,14 @@ function RouteComponent() {
 
 	const createMedalAccessor = (
 		accessorKey: "authorScore" | "goldScore" | "silverScore" | "bronzeScore",
+		medalName: string,
 		medalImg: string,
 		medalAlt: string,
 	) => {
 		return columnHelper.accessor(accessorKey, {
+			header: () => <span>{medalName}</span>,
 			cell: (info) => (
-				<div className="flex flex-row items-center gap-x-1">
+				<div className="flex flex-row items-center gap-x-1 px-2">
 					<img className="w-6 h-6" src={medalImg} alt={medalAlt} />
 					{formatTime(info.getValue())}
 				</div>
@@ -46,15 +48,21 @@ function RouteComponent() {
 
 	const columns = [
 		columnHelper.accessor("thumbnailUrl", {
+			header: () => <span>Thumbnail</span>,
 			cell: (info) => (
-				<img className="w-28 h-28" src={info.getValue()} alt="thumbnail" />
+				<img
+					className="w-38 h-38 py-2 mr-2"
+					src={info.getValue()}
+					alt="thumbnail"
+				/>
 			),
 		}),
 		columnHelper.group({
-			id: "Name",
-			header: () => <span>Name</span>,
+			id: "Map",
+			header: () => <span>Map</span>,
 			columns: [
 				columnHelper.accessor("name", {
+					header: () => <span>Name</span>,
 					cell: (info) => {
 						const segments = parseTrackmaniaStyledText(info.getValue());
 						return (
@@ -93,14 +101,15 @@ function RouteComponent() {
 			id: "Medals",
 			header: () => <span>Medals</span>,
 			columns: [
-				createMedalAccessor("authorScore", authorMedal, "Author"),
-				createMedalAccessor("goldScore", goldMedal, "Gold"),
-				createMedalAccessor("silverScore", silverMedal, "Silver"),
-				createMedalAccessor("bronzeScore", bronzeMedal, "Bronze"),
+				createMedalAccessor("authorScore", "Author", authorMedal, "Author"),
+				createMedalAccessor("goldScore", "Gold", goldMedal, "Gold"),
+				createMedalAccessor("silverScore", "Silver", silverMedal, "Silver"),
+				createMedalAccessor("bronzeScore", "Bronze", bronzeMedal, "Bronze"),
 			],
 		}),
 		columnHelper.accessor("timestamp", {
-			cell: (info) => new Date(info.getValue() * 1000).toLocaleString(),
+			header: () => <span>Date</span>,
+			cell: (info) => info.getValue(),
 		}),
 	];
 
@@ -112,7 +121,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<div>
+		<div className="text-white">
 			<button
 				type="button"
 				onClick={async () => {
@@ -130,12 +139,12 @@ function RouteComponent() {
 				Next
 			</button>
 			<div className="p-2 border">
-				<table>
+				<table className="bg-tm-grey">
 					<thead className="border">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<tr key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
-									<th key={header.id} className="border">
+									<th key={header.id}>
 										{header.isPlaceholder
 											? null
 											: flexRender(
@@ -149,9 +158,9 @@ function RouteComponent() {
 					</thead>
 					<tbody>
 						{table.getRowModel().rows.map((row) => (
-							<tr key={row.id}>
+							<tr key={row.id} className="border">
 								{row.getVisibleCells().map((cell) => (
-									<td key={cell.id} className="border border-tm-white">
+									<td key={cell.id}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</td>
 								))}
