@@ -31,16 +31,14 @@ function RouteComponent() {
 
 	const createMedalAccessor = (
 		accessorKey: "authorScore" | "goldScore" | "silverScore" | "bronzeScore",
-		medalName: string,
 		medalImg: string,
 		medalAlt: string,
 	) => {
 		return columnHelper.accessor(accessorKey, {
-			header: () => <span>{medalName}</span>,
 			cell: (info) => (
-				<div className="flex flex-row items-center gap-x-1 px-2">
+				<div className="flex flex-row items-center gap-x-2 px-2">
 					<img className="w-6 h-6" src={medalImg} alt={medalAlt} />
-					{formatTime(info.getValue())}
+					<span className="font-mono">{formatTime(info.getValue())}</span>
 				</div>
 			),
 		});
@@ -48,10 +46,9 @@ function RouteComponent() {
 
 	const columns = [
 		columnHelper.accessor("thumbnailUrl", {
-			header: () => <span>Thumbnail</span>,
 			cell: (info) => (
 				<img
-					className="w-38 h-38 py-2 mr-2"
+					className="w-36 h-24 object-cover rounded shadow-md"
 					src={info.getValue()}
 					alt="thumbnail"
 				/>
@@ -59,10 +56,8 @@ function RouteComponent() {
 		}),
 		columnHelper.group({
 			id: "Map",
-			header: () => <span>Map</span>,
 			columns: [
 				columnHelper.accessor("name", {
-					header: () => <span>Name</span>,
 					cell: (info) => {
 						const segments = parseTrackmaniaStyledText(info.getValue());
 						return (
@@ -99,17 +94,15 @@ function RouteComponent() {
 		}),
 		columnHelper.group({
 			id: "Medals",
-			header: () => <span>Medals</span>,
 			columns: [
-				createMedalAccessor("authorScore", "Author", authorMedal, "Author"),
-				createMedalAccessor("goldScore", "Gold", goldMedal, "Gold"),
-				createMedalAccessor("silverScore", "Silver", silverMedal, "Silver"),
-				createMedalAccessor("bronzeScore", "Bronze", bronzeMedal, "Bronze"),
+				createMedalAccessor("authorScore", authorMedal, "Author"),
+				createMedalAccessor("goldScore", goldMedal, "Gold"),
+				createMedalAccessor("silverScore", silverMedal, "Silver"),
+				createMedalAccessor("bronzeScore", bronzeMedal, "Bronze"),
 			],
 		}),
 		columnHelper.accessor("timestamp", {
-			header: () => <span>Date</span>,
-			cell: (info) => info.getValue(),
+			cell: (info) => <span className="font-mono">{info.getValue()}</span>,
 		}),
 	];
 
@@ -121,46 +114,44 @@ function RouteComponent() {
 	});
 
 	return (
-		<div className="text-white">
-			<button
-				type="button"
-				onClick={async () => {
-					table.previousPage();
-				}}
-			>
-				Previous
-			</button>
-			<button
-				type="button"
-				onClick={async () => {
-					table.nextPage();
-				}}
-			>
-				Next
-			</button>
-			<div className="p-2 border">
-				<table className="bg-tm-grey">
-					<thead className="border">
-						{table.getHeaderGroups().map((headerGroup) => (
-							<tr key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<th key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
-									</th>
-								))}
-							</tr>
-						))}
-					</thead>
-					<tbody>
+		<div className="text-white p-4">
+			<div className="mt-4 flex items-center justify-between font-mono">
+				<div className="flex gap-x-2 items-center">
+					<span className="text-sm">
+						Page {table.getState().pagination.pageIndex + 1} of{" "}
+						{table.getPageCount()}
+					</span>
+				</div>
+
+				<div className="flex gap-x-2">
+					<button
+						type="button"
+						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150"
+						onClick={() => table.previousPage()}
+						disabled={!table.getCanPreviousPage()}
+					>
+						Previous
+					</button>
+					<button
+						type="button"
+						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150"
+						onClick={() => table.nextPage()}
+						disabled={!table.getCanNextPage()}
+					>
+						Next
+					</button>
+				</div>
+			</div>
+			<div className="rounded-lg shadow-lg">
+				<table className="bg-tm-grey w-full border-collapse">
+					<tbody className="border-t border-gray-700">
 						{table.getRowModel().rows.map((row) => (
-							<tr key={row.id} className="border">
+							<tr
+								key={row.id}
+								className="border-b border-gray-700 hover:bg-gray-700 transition-colors duration-150"
+							>
 								{row.getVisibleCells().map((cell) => (
-									<td key={cell.id}>
+									<td key={cell.id} className="px-4 py-2">
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</td>
 								))}
@@ -168,7 +159,6 @@ function RouteComponent() {
 						))}
 					</tbody>
 				</table>
-				<div className="h-4" />
 			</div>
 		</div>
 	);
