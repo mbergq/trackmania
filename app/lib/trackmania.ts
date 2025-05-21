@@ -137,7 +137,7 @@ const createTrackmaniaClient = (
 			);
 			const data: Promise<Records> = res.json();
 			console.log("--- getRecords executed");
-			return { responseData: await data, numberOfRecords: (await data).length };
+			return { responseData: await data };
 		},
 		getMapInfo: async (mapId: string) => {
 			const res = await client(
@@ -159,7 +159,6 @@ const createTrackmaniaClient = (
 			);
 			const data: Promise<MapRecords> = res.json();
 			console.log("--- getMapRecords executed");
-			console.log(data);
 			return { responseData: await data };
 		},
 	};
