@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { accountId } from "@/constants";
 import type { MapRecords, MapsInfo, Records } from "@/types";
+import { throttle } from "./server-utils";
 
 const userAgent = process.env.USER_AGENT ?? "";
 const ubiCredentials = process.env.UBI_CREDENTIALS ?? "";
@@ -119,14 +120,18 @@ const getAccessToken = async (
 const createTrackmaniaClient = (
 	audience: "NadeoServices" | "NadeoLiveServices",
 ) => {
+	const requestThrottler = throttle();
+
 	const client = async (url: string, options?: RequestInit) => {
-		return fetch(url, {
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `nadeo_v1 t=${await getAccessToken(audience)}`,
-				...options?.headers,
-			},
-			...options,
+		return requestThrottler(async () => {
+			return fetch(url, {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `nadeo_v1 t=${await getAccessToken(audience)}`,
+					...options?.headers,
+				},
+				...options,
+			});
 		});
 	};
 

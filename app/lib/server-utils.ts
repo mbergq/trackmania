@@ -1,6 +1,24 @@
 import { db } from "./db";
 import type { MapsInfo } from "@/types";
 
+export const throttle = () => {
+	let lastCallTime = 0;
+
+	return async <T>(fn: () => Promise<T>): Promise<T> => {
+		const now = Date.now();
+		const timeSinceLastCall = now - lastCallTime;
+		const throttleDelay = 1000;
+
+		if (timeSinceLastCall < throttleDelay) {
+			const waitTime = throttleDelay - timeSinceLastCall;
+			await new Promise((resolve) => setTimeout(resolve, waitTime));
+		}
+
+		lastCallTime = Date.now();
+		return fn();
+	};
+};
+
 export const reformatIds = (ids: string[], start: number, end: number) => {
 	return ids
 		.slice(start, end)
