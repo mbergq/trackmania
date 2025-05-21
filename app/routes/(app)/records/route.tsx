@@ -1,7 +1,7 @@
 import { formatTime, parseTrackmaniaStyledText } from "@/lib/client-utils";
 import { getMapInfoFn } from "@/server/getMapInfo";
 import { getMapRecordsFn } from "@/server/getMapRecords";
-import { getMapsInfoFn } from "@/server/getMapsinfo";
+import { getMapsFn } from "@/server/getMaps";
 import type { MapInfo } from "@/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -20,7 +20,7 @@ import bronzeMedal from "@/assets/medals/medal_bronze.png";
 export const Route = createFileRoute("/(app)/records")({
 	component: RouteComponent,
 	loader: async () => {
-		const data = await getMapsInfoFn();
+		const data = await getMapsFn();
 		return { data };
 	},
 });
@@ -128,7 +128,7 @@ function RouteComponent() {
 				<div className="flex gap-x-2">
 					<button
 						type="button"
-						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150"
+						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150 text-tm-green"
 						onClick={() => table.previousPage()}
 						disabled={!table.getCanPreviousPage()}
 					>
@@ -136,7 +136,7 @@ function RouteComponent() {
 					</button>
 					<button
 						type="button"
-						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150"
+						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150 text-tm-green"
 						onClick={() => table.nextPage()}
 						disabled={!table.getCanNextPage()}
 					>
