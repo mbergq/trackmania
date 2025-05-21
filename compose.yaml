@@ -1,0 +1,9 @@
+services:
+  client:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/usr/src/app/data
+    platform: "linux/arm64"
