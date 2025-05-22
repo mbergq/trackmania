@@ -32,7 +32,6 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 				thumbnail_url,
 				timestamp
 			FROM maps
-			ORDER BY timestamp DESC
 		`)
 		.all() as DBMapsInfo;
 

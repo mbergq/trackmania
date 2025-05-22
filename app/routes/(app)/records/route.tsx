@@ -1,8 +1,7 @@
 import { formatTime, parseTrackmaniaStyledText } from "@/lib/client-utils";
-import { getMapInfoFn } from "@/server/getMapInfo";
 import { getMapRecordsFn } from "@/server/getMapRecords";
 import { getMapsFn } from "@/server/getMaps";
-import type { MapInfo } from "@/types";
+import type { MapRecords, MapInfo } from "@/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -16,6 +15,8 @@ import authorMedal from "@/assets/medals/medal_author.png";
 import goldMedal from "@/assets/medals/medal_gold.png";
 import silverMedal from "@/assets/medals/medal_silver.png";
 import bronzeMedal from "@/assets/medals/medal_bronze.png";
+import { MapModal } from "@/components/MapModal";
+import { useState } from "react";
 
 export const Route = createFileRoute("/(app)/records")({
 	component: RouteComponent,
@@ -25,11 +26,69 @@ export const Route = createFileRoute("/(app)/records")({
 	},
 });
 
+export type MapModalData = {
+	records: MapRecords;
+	referenceMedals: {
+		author: {
+			time: number;
+		};
+		gold: {
+			time: number;
+		};
+		silver: {
+			time: number;
+		};
+		bronze: {
+			time: number;
+		};
+	};
+};
+
 function RouteComponent() {
 	const { data } = Route.useLoaderData();
-	const getMapInfo = useServerFn(getMapInfoFn);
 	const getMapRecords = useServerFn(getMapRecordsFn);
 	const columnHelper = createColumnHelper<MapInfo>();
+	const [modalIsVisible, setModalIsVisible] = useState(false);
+	const [mapData, setMapData] = useState<MapModalData | null>(null);
+
+	const getSetMapData = async (
+		mapId: string,
+		{
+			authorScore,
+			goldScore,
+			silverScore,
+			bronzeScore,
+		}: {
+			authorScore: number;
+			goldScore: number;
+			silverScore: number;
+			bronzeScore: number;
+		},
+	) => {
+		const { responseData } = await getMapRecords({
+			data: {
+				mapId: mapId,
+			},
+		});
+		const dataToSet: MapModalData = {
+			records: responseData,
+			referenceMedals: {
+				author: {
+					time: authorScore,
+				},
+				gold: {
+					time: goldScore,
+				},
+				bronze: {
+					time: bronzeScore,
+				},
+				silver: {
+					time: silverScore,
+				},
+			},
+		};
+		setMapData(dataToSet);
+	};
 
 	const createMedalAccessor = (
 		accessorKey: "authorScore" | "goldScore" | "silverScore" | "bronzeScore",
@@ -144,6 +203,9 @@ function RouteComponent() {
 					</button>
 				</div>
 			</div>
+			{modalIsVisible && (
+				<MapModal data={mapData} setModalIsVisible={setModalIsVisible} />
+			)}
 			<div className="rounded-lg shadow-lg">
 				<table className="bg-tm-grey w-full border-collapse">
 					<tbody className="border-t border-gray-700">
@@ -157,11 +219,15 @@ function RouteComponent() {
 										<button
 											type="button"
 											className="w-full h-full text-left"
-											onClick={() =>
-												getMapRecords({
-													data: { mapId: cell.row.original.mapId },
-												})
-											}
+											onClick={() => {
+												setModalIsVisible(!modalIsVisible);
+												getSetMapData(cell.row.original.mapId, {
+													authorScore: cell.row.original.authorScore,
+													goldScore: cell.row.original.goldScore,
+													silverScore: cell.row.original.silverScore,
+													bronzeScore: cell.row.original.bronzeScore,
+												});
+											}}
 										>
 											{flexRender(
 												cell.column.columnDef.cell,
