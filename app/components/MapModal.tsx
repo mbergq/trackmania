@@ -1,20 +1,26 @@
-import type { MapModalData } from "@/routes/(app)/records/route";
 import { formatTime } from "@/lib/client-utils";
+import type { getMapRecordsFn } from "@/server/getMapRecords";
+import { Route, useNavigate } from "@tanstack/react-router";
+import { use } from "react";
 
 type Props = {
-	setModalIsVisible: (isVisible: boolean) => void;
-	data: MapModalData | null;
+	mapPromise: ReturnType<typeof getMapRecordsFn>;
 };
 
-export const MapModal: React.FC<Props> = ({ setModalIsVisible, data }) => {
-	console.log(data?.records?.[0]);
-	console.log(data?.referenceMedals);
+export const MapModal: React.FC<Props> = ({ mapPromise }) => {
+	const map = use(mapPromise);
+	const navigate = useNavigate({ from: "/records" });
+	const singleMap = map.responseData;
+
 	return (
 		<div className="bg-background-blue w-full h-96 fixed left-154">
-			<button type="button" onClick={() => setModalIsVisible(false)}>
+			<button
+				type="button"
+				onClick={() => navigate({ search: { mapId: undefined, page: 1 } })}
+			>
 				Close
 			</button>
-			{data?.records?.map((x) => (
+			{singleMap?.map((x) => (
 				<div key={x.mapId}>
 					<p>Your PB:{formatTime(x.recordScore.time)}</p>
 					<p>Record driven: {new Date(x.timestamp).toLocaleString()}</p>

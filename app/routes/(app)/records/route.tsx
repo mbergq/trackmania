@@ -3,7 +3,6 @@ import { getMapRecordsFn } from "@/server/getMapRecords";
 import { getMapsFn } from "@/server/getMaps";
 import type { MapRecords, MapInfo } from "@/types";
 import { createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import {
 	createColumnHelper,
 	flexRender,
@@ -16,14 +15,27 @@ import goldMedal from "@/assets/medals/medal_gold.png";
 import silverMedal from "@/assets/medals/medal_silver.png";
 import bronzeMedal from "@/assets/medals/medal_bronze.png";
 import { MapModal } from "@/components/MapModal";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/(app)/records")({
-	component: RouteComponent,
-	loader: async () => {
-		const data = await getMapsFn();
-		return { data };
+	validateSearch: z.object({
+		page: z.number().default(1),
+		mapId: z.string().optional(),
+	}),
+	loaderDeps: ({ search }) => ({ mapId: search.mapId, page: search.page }),
+	loader: async ({ deps: { mapId, page } }) => {
+		const maps = await getMapsFn();
+
+		return {
+			maps,
+			...(mapId && {
+				mapPromise: getMapRecordsFn({ data: { mapId } }),
+				page: page,
+			}),
+		};
 	},
+	component: RouteComponent,
 });
 
 export type MapModalData = {
@@ -45,50 +57,19 @@ export type MapModalData = {
 };
 
 function RouteComponent() {
-	const { data } = Route.useLoaderData();
-	const getMapRecords = useServerFn(getMapRecordsFn);
-	const columnHelper = createColumnHelper<MapInfo>();
-	const [modalIsVisible, setModalIsVisible] = useState(false);
-	const [mapData, setMapData] = useState<MapModalData | null>(null);
+	const { maps: data, mapPromise } = Route.useLoaderData();
+	const { mapId, page } = Route.useSearch({
+		select: (search) => ({ mapId: search.mapId, page: search.page }),
+		structuralSharing: true,
+	});
+	const [pagination, setPagination] = useState({
+		pageIndex: page -1,
+		pageSize: 10,
+	});
+	console.log(pagination.pageIndex);
 
-	const getSetMapData = async (
-		mapId: string,
-		{
-			authorScore,
-			goldScore,
-			silverScore,
-			bronzeScore,
-		}: {
-			authorScore: number;
-			goldScore: number;
-			silverScore: number;
-			bronzeScore: number;
-		},
-	) => {
-		const { responseData } = await getMapRecords({
-			data: {
-				mapId: mapId,
-			},
-		});
-		const dataToSet: MapModalData = {
-			records: responseData,
-			referenceMedals: {
-				author: {
-					time: authorScore,
-				},
-				gold: {
-					time: goldScore,
-				},
-				bronze: {
-					time: bronzeScore,
-				},
-				silver: {
-					time: silverScore,
-				},
-			},
-		};
-		setMapData(dataToSet);
-	};
+	const columnHelper = createColumnHelper<MapInfo>();
+	const navigate = Route.useNavigate();
 
 	const createMedalAccessor = (
 		accessorKey: "authorScore" | "goldScore" | "silverScore" | "bronzeScore",
@@ -172,6 +153,9 @@ function RouteComponent() {
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
+		state: {
+			pagination,
+		},
 	});
 
 	return (
@@ -179,7 +163,7 @@ function RouteComponent() {
 			<div className="mt-4 flex items-center justify-between font-mono">
 				<div className="flex gap-x-2 items-center">
 					<span className="text-sm">
-						Page {table.getState().pagination.pageIndex + 1} of{" "}
+						Page {page} of{" "}
 						{table.getPageCount()}
 					</span>
 				</div>
@@ -188,7 +172,17 @@ function RouteComponent() {
 					<button
 						type="button"
 						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150 text-tm-green"
-						onClick={() => table.previousPage()}
+						onClick={() => {
+							setPagination({
+								pageIndex: pagination.pageIndex - 1,
+								pageSize: pagination.pageSize,
+							});
+							navigate({
+								search: {
+									page: page - 1,
+								},
+							});
+						}}
 						disabled={!table.getCanPreviousPage()}
 					>
 						Previous
@@ -196,15 +190,27 @@ function RouteComponent() {
 					<button
 						type="button"
 						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150 text-tm-green"
-						onClick={() => table.nextPage()}
+						onClick={() => {
+							setPagination({
+								pageIndex: pagination.pageIndex + 1,
+								pageSize: pagination.pageSize,
+							});
+							navigate({
+								search: {
+									page: page + 1,
+								},
+							});
+						}}
 						disabled={!table.getCanNextPage()}
 					>
 						Next
 					</button>
 				</div>
 			</div>
-			{modalIsVisible && (
-				<MapModal data={mapData} setModalIsVisible={setModalIsVisible} />
+			{mapPromise && (
+				<Suspense fallback={<div>Loading...</div>}>
+					<MapModal mapPromise={mapPromise} />
+				</Suspense>
 			)}
 			<div className="rounded-lg shadow-lg">
 				<table className="bg-tm-grey w-full border-collapse">
@@ -220,12 +226,11 @@ function RouteComponent() {
 											type="button"
 											className="w-full h-full text-left"
 											onClick={() => {
-												setModalIsVisible(!modalIsVisible);
-												getSetMapData(cell.row.original.mapId, {
-													authorScore: cell.row.original.authorScore,
-													goldScore: cell.row.original.goldScore,
-													silverScore: cell.row.original.silverScore,
-													bronzeScore: cell.row.original.bronzeScore,
+												navigate({
+													search: {
+														page: page,
+														mapId: cell.row.original.mapId,
+													},
 												});
 											}}
 										>
