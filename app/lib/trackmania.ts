@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { ACCOUNT_ID } from "@/constants";
-import type { MapRecords, MapsInfo, Records } from "@/types";
+import type { MapInfo, MapRecords, MapsInfo, Records } from "@/types";
 import { throttle } from "./utils/server-utils";
 
 const userAgent = process.env.USER_AGENT ?? "";
@@ -148,7 +148,9 @@ const createTrackmaniaClient = (
 			const res = await client(
 				`https://prod.trackmania.core.nadeo.online/maps/${mapId}`,
 			);
-			return res.json();
+			const data: Promise<MapInfo> = res.json();
+			console.log("--- getMapInfo executed");
+			return { responseData: await data };
 		},
 		getMapsInfo: async (mapIds: string) => {
 			const res = await client(

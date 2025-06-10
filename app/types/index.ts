@@ -58,7 +58,6 @@ type MapsInfo = {
 	timestamp: Date;
 }[];
 
-// Used for client when creating table with TanStack Table
 type MapInfo = {
 	author: string;
 	authorScore: number;

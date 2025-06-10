@@ -9,6 +9,8 @@ const data = z.object({
 export const getMapRecordsFn = createServerFn({ method: "GET" })
 	.validator(data)
 	.handler(async ({ data }) => {
+		// Naming the variable to records since I will return records for more than one person later on
 		const records = await tmCoreClient.getMapRecords(data.mapId);
-		return records;
+		const mapInfo = await tmCoreClient.getMapInfo(data.mapId);
+		return { records: records, mapInfo: mapInfo };
 	});

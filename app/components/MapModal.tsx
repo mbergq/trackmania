@@ -10,7 +10,8 @@ type Props = {
 export const MapModal: React.FC<Props> = ({ mapPromise }) => {
 	const map = use(mapPromise);
 	const navigate = useNavigate({ from: "/records" });
-	const singleMap = map.responseData;
+	const mapRecord = map.records.responseData;
+	const mapInfo = map.mapInfo.responseData;
 
 	return (
 		<div className="bg-background-blue w-full h-96 fixed left-154">
@@ -20,7 +21,7 @@ export const MapModal: React.FC<Props> = ({ mapPromise }) => {
 			>
 				Close
 			</button>
-			{singleMap?.map((x) => (
+			{mapRecord?.map((x) => (
 				<div key={x.mapId}>
 					<p>Your PB:{formatTime(x.recordScore.time)}</p>
 					<p>Record driven: {new Date(x.timestamp).toLocaleString()}</p>
