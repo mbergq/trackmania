@@ -1,4 +1,4 @@
-import { db } from "./db";
+import { db } from "../db/index";
 import type { MapsInfo } from "@/types";
 
 export const throttle = () => {

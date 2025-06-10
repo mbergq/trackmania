@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { accountId } from "@/constants";
+import { ACCOUNT_ID } from "@/constants";
 import type { MapRecords, MapsInfo, Records } from "@/types";
-import { throttle } from "./server-utils";
+import { throttle } from "./utils/server-utils";
 
 const userAgent = process.env.USER_AGENT ?? "";
 const ubiCredentials = process.env.UBI_CREDENTIALS ?? "";
@@ -138,7 +138,7 @@ const createTrackmaniaClient = (
 	const tmCoreClient = {
 		getRecords: async () => {
 			const res = await client(
-				`https://prod.trackmania.core.nadeo.online/v2/accounts/${accountId}/mapRecords`,
+				`https://prod.trackmania.core.nadeo.online/v2/accounts/${ACCOUNT_ID}/mapRecords`,
 			);
 			const data: Promise<Records> = res.json();
 			console.log("--- getRecords executed");

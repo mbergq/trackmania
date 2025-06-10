@@ -1,4 +1,7 @@
-import { formatTime, parseTrackmaniaStyledText } from "@/lib/client-utils";
+import {
+	formatTime,
+	parseTrackmaniaStyledText,
+} from "@/lib/utils/client-utils";
 import { getMapRecordsFn } from "@/server/getMapRecords";
 import { getMapsFn } from "@/server/getMaps";
 import type { MapRecords, MapInfo } from "@/types";
@@ -38,24 +41,6 @@ export const Route = createFileRoute("/(app)/records")({
 	component: RouteComponent,
 });
 
-export type MapModalData = {
-	records: MapRecords;
-	referenceMedals: {
-		author: {
-			time: number;
-		};
-		gold: {
-			time: number;
-		};
-		silver: {
-			time: number;
-		};
-		bronze: {
-			time: number;
-		};
-	};
-};
-
 function RouteComponent() {
 	const { maps: data, mapPromise } = Route.useLoaderData();
 	const { mapId, page } = Route.useSearch({
@@ -63,10 +48,9 @@ function RouteComponent() {
 		structuralSharing: true,
 	});
 	const [pagination, setPagination] = useState({
-		pageIndex: page -1,
+		pageIndex: page - 1,
 		pageSize: 10,
 	});
-	console.log(pagination.pageIndex);
 
 	const columnHelper = createColumnHelper<MapInfo>();
 	const navigate = Route.useNavigate();
@@ -163,8 +147,7 @@ function RouteComponent() {
 			<div className="mt-4 flex items-center justify-between font-mono">
 				<div className="flex gap-x-2 items-center">
 					<span className="text-sm">
-						Page {page} of{" "}
-						{table.getPageCount()}
+						Page {page} of {table.getPageCount()}
 					</span>
 				</div>
 

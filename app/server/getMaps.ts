@@ -4,7 +4,7 @@ import {
 	getRanges,
 	insertMapsIntoDatabase,
 	reformatIds,
-} from "@/lib/server-utils";
+} from "@/lib/utils/server-utils";
 import type { DBMapsInfo } from "@/types";
 import { createServerFn } from "@tanstack/react-start";
 
