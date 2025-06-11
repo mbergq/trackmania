@@ -9,6 +9,7 @@ import authorMedal from "@/assets/medals/medal_author.png";
 import goldMedal from "@/assets/medals/medal_gold.png";
 import silverMedal from "@/assets/medals/medal_silver.png";
 import bronzeMedal from "@/assets/medals/medal_bronze.png";
+import { TrackmaniaText } from "./TrackmaniaText";
 
 type Props = {
 	mapPromise: ReturnType<typeof getMapRecordsFn>;
@@ -65,6 +66,7 @@ export const MapModal: React.FC<Props> = ({ mapPromise }) => {
 					src={mapInfo.thumbnailUrl}
 					alt="thumbnail"
 				/>
+				<TrackmaniaText letters={mapInfo.name} />
 			</div>
 			{mapRecord?.map((x) => (
 				<div

@@ -1,10 +1,7 @@
-import {
-	formatTime,
-	parseTrackmaniaStyledText,
-} from "@/lib/utils/client-utils";
+import { formatTime } from "@/lib/utils/client-utils";
 import { getMapRecordsFn } from "@/server/getMapRecords";
 import { getMapsFn } from "@/server/getMaps";
-import type { MapRecords, MapInfo } from "@/types";
+import type { MapInfo } from "@/types";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	createColumnHelper,
@@ -18,6 +15,7 @@ import goldMedal from "@/assets/medals/medal_gold.png";
 import silverMedal from "@/assets/medals/medal_silver.png";
 import bronzeMedal from "@/assets/medals/medal_bronze.png";
 import { MapModal } from "@/components/MapModal";
+import { TrackmaniaText } from "@/components/TrackmaniaText";
 import { Suspense, useState } from "react";
 import { z } from "zod";
 
@@ -85,35 +83,7 @@ function RouteComponent() {
 			columns: [
 				columnHelper.accessor("name", {
 					cell: (info) => {
-						const segments = parseTrackmaniaStyledText(info.getValue());
-						return (
-							<span>
-								{segments.map((segment) => (
-									<span
-										key={segment.color + segment.text}
-										style={{
-											color: segment.color,
-											fontWeight: segment.styles.bold ? "bold" : "normal",
-											fontStyle: segment.styles.italic ? "italic" : "normal",
-											fontStretch: segment.styles.wide
-												? "expanded"
-												: segment.styles.narrow
-													? "condensed"
-													: "normal",
-											textShadow: segment.styles.shadow ? "" : "none",
-											fontVariant: segment.styles.narrow
-												? "small-caps"
-												: "normal",
-											textTransform: segment.styles.uppercase
-												? "uppercase"
-												: "none",
-										}}
-									>
-										{segment.text}
-									</span>
-								))}
-							</span>
-						);
+						return <TrackmaniaText letters={info.getValue()} />;
 					},
 				}),
 			],
