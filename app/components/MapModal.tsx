@@ -1,4 +1,7 @@
-import { formatTime } from "@/lib/utils/client-utils";
+import {
+	formatTime,
+	parseTrackmaniaStyledText,
+} from "@/lib/utils/client-utils";
 import type { getMapRecordsFn } from "@/server/getMapRecords";
 import { useNavigate } from "@tanstack/react-router";
 import { use } from "react";
@@ -48,17 +51,27 @@ export const MapModal: React.FC<Props> = ({ mapPromise }) => {
 	const mapInfo = map.mapInfo.responseData;
 
 	return (
-		<div className="bg-background-blue w-full h-96 fixed left-154">
+		<div className="bg-gray-600 w-full h-96 fixed left-154 rounded-lg shadow-lg text-white p-4 overflow-y-auto">
 			<button
 				type="button"
+				className="absolute top-2 right-2 px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors duration-150 text-tm-green"
 				onClick={() => navigate({ search: { mapId: undefined, page: 1 } })}
 			>
 				Close
 			</button>
+			<div className="flex flex-row items-center gap-x-2">
+				<img
+					className="w-56 h-36 object-cover rounded shadow-md"
+					src={mapInfo.thumbnailUrl}
+					alt="thumbnail"
+				/>
+			</div>
 			{mapRecord?.map((x) => (
-				<div key={x.mapId}>
-					<p>Your PB:{formatTime(x.recordScore.time)}</p>
-					<p>Record driven: {new Date(x.timestamp).toLocaleString()}</p>
+				<div
+					key={x.mapId}
+					className="flex flex-row gap-x-2 gap-y-1 bg-gray-800 rounded p-3 mb-2"
+				>
+					<p className="font-mono">Your PB: {formatTime(x.recordScore.time)}</p>
 					{calculatePb(
 						x.recordScore.time,
 						mapInfo.bronzeScore,
@@ -66,6 +79,9 @@ export const MapModal: React.FC<Props> = ({ mapPromise }) => {
 						mapInfo.goldScore,
 						mapInfo.authorScore,
 					)}
+					<p className="text-sm text-gray-300">
+						Record driven: {new Date(x.timestamp).toLocaleString()}
+					</p>
 				</div>
 			))}
 		</div>
