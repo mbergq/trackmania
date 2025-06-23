@@ -3,7 +3,7 @@ import {
 	parseTrackmaniaStyledText,
 } from "@/lib/utils/client-utils";
 import type { getMapRecordsFn } from "@/server/getMapRecords";
-import { useNavigate } from "@tanstack/react-router";
+import { Route, useNavigate } from "@tanstack/react-router";
 import { use } from "react";
 import authorMedal from "@/assets/medals/medal_author.png";
 import goldMedal from "@/assets/medals/medal_gold.png";
@@ -13,6 +13,7 @@ import { TrackmaniaText } from "./TrackmaniaText";
 
 type Props = {
 	mapPromise: ReturnType<typeof getMapRecordsFn>;
+	currentPage: number;
 };
 
 const calculatePb = (
@@ -45,7 +46,7 @@ const calculatePb = (
 	);
 };
 
-export const MapModal: React.FC<Props> = ({ mapPromise }) => {
+export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 	const map = use(mapPromise);
 	const navigate = useNavigate({ from: "/records" });
 	const mapRecord = map.records.responseData;
@@ -53,13 +54,6 @@ export const MapModal: React.FC<Props> = ({ mapPromise }) => {
 
 	return (
 		<div className="bg-gray-600 w-full h-96 fixed left-154 rounded-lg shadow-lg text-white p-4 overflow-y-auto">
-			<button
-				type="button"
-				className="absolute top-2 right-2 px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors duration-150 text-tm-green"
-				onClick={() => navigate({ search: { mapId: undefined, page: 1 } })}
-			>
-				Close
-			</button>
 			<div className="flex flex-row items-center gap-x-2">
 				<img
 					className="w-56 h-36 object-cover rounded shadow-md"
@@ -86,6 +80,15 @@ export const MapModal: React.FC<Props> = ({ mapPromise }) => {
 					</p>
 				</div>
 			))}
+			<button
+				type="button"
+				className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors duration-150 text-tm-green"
+				onClick={() =>
+					navigate({ search: { mapId: undefined, page: currentPage } })
+				}
+			>
+				X
+			</button>
 		</div>
 	);
 };

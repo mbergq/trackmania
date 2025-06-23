@@ -162,7 +162,7 @@ function RouteComponent() {
 			</div>
 			{mapPromise && (
 				<Suspense fallback={<div>Loading...</div>}>
-					<MapModal mapPromise={mapPromise} />
+					<MapModal mapPromise={mapPromise} currentPage={page} />
 				</Suspense>
 			)}
 			<div className="rounded-lg shadow-lg">
