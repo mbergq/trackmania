@@ -18,6 +18,7 @@ import { MapModal } from "@/components/MapModal";
 import { TrackmaniaText } from "@/components/TrackmaniaText";
 import { Suspense, useState } from "react";
 import { z } from "zod";
+import { Loader } from "lucide-react";
 
 export const Route = createFileRoute("/(app)/records")({
 	validateSearch: z.object({
@@ -161,7 +162,13 @@ function RouteComponent() {
 				</div>
 			</div>
 			{mapPromise && (
-				<Suspense fallback={<div>Loading...</div>}>
+				<Suspense
+					fallback={
+						<div className="fixed inset-0 flex items-center justify-center bg-opacity-30 backdrop-blur-md z-50">
+							<Loader className="animate-spin" />
+						</div>
+					}
+				>
 					<MapModal mapPromise={mapPromise} currentPage={page} />
 				</Suspense>
 			)}

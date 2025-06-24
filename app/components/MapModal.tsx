@@ -53,7 +53,16 @@ export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 	const mapInfo = map.mapInfo.responseData;
 
 	return (
-		<div className="bg-gray-600 w-full h-96 fixed left-154 rounded-lg shadow-lg text-white p-4 overflow-y-auto">
+		<div className="bg-gray-600 w-lg h-96 fixed left-154 rounded-lg shadow-lg text-white p-4 overflow-y-auto flex flex-col gap-y-2">
+			<button
+				type="button"
+				className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors duration-150 text-tm-green w-fit self-start"
+				onClick={() =>
+					navigate({ search: { mapId: undefined, page: currentPage } })
+				}
+			>
+				X
+			</button>
 			<div className="flex flex-row items-center gap-x-2">
 				<img
 					className="w-56 h-36 object-cover rounded shadow-md"
@@ -75,20 +84,11 @@ export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 						mapInfo.goldScore,
 						mapInfo.authorScore,
 					)}
-					<p className="text-sm text-gray-300">
+					{/* <p className="text-sm text-gray-300">
 						Record driven: {new Date(x.timestamp).toLocaleString()}
-					</p>
+					</p> */}
 				</div>
 			))}
-			<button
-				type="button"
-				className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors duration-150 text-tm-green"
-				onClick={() =>
-					navigate({ search: { mapId: undefined, page: currentPage } })
-				}
-			>
-				X
-			</button>
 		</div>
 	);
 };
