@@ -166,7 +166,7 @@ function RouteComponent() {
 				<Suspense
 					fallback={
 						<div className="fixed inset-0 flex items-center justify-center bg-opacity-30 backdrop-blur-md z-50">
-							<Loader className="animate-spin" />
+							<Loader className="animate-spin text-tm-green" />
 						</div>
 					}
 				>

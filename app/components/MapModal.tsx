@@ -20,7 +20,7 @@ const calculatePb = (
 	gold: number,
 	author: number,
 ) => {
-	const medal = () => {
+	const getMedal = () => {
 		if (pb <= author) {
 			return authorMedal;
 		}
@@ -33,12 +33,15 @@ const calculatePb = (
 		if (pb <= bronze) {
 			return bronzeMedal;
 		}
-		return "No medal";
+		return undefined;
 	};
 
 	return (
 		<div>
-			<img className="w-6 h-6" src={medal()} alt="medal logo" />
+			{getMedal() && (
+				<img className="w-6 h-6" src={getMedal()} alt="medal logo" />
+			)}
+			{!getMedal() && <span className="text-gray-500">No medal</span>}
 		</div>
 	);
 };
