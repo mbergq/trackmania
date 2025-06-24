@@ -1,7 +1,4 @@
-import {
-	formatTime,
-	parseTrackmaniaStyledText,
-} from "@/lib/utils/client-utils";
+import { formatTime } from "@/lib/utils/client-utils";
 import type { getMapRecordsFn } from "@/server/getMapRecords";
 import { Route, useNavigate } from "@tanstack/react-router";
 import { use } from "react";

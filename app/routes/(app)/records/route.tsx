@@ -46,6 +46,7 @@ function RouteComponent() {
 		select: (search) => ({ mapId: search.mapId, page: search.page }),
 		structuralSharing: true,
 	});
+
 	const [pagination, setPagination] = useState({
 		pageIndex: page - 1,
 		pageSize: 10,
@@ -186,6 +187,9 @@ function RouteComponent() {
 											type="button"
 											className="w-full h-full text-left"
 											onClick={() => {
+												if (cell.row.original.mapId === mapId) {
+													return;
+												}
 												navigate({
 													search: {
 														page: page,
