@@ -55,7 +55,10 @@ export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 				type="button"
 				className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors duration-150 text-tm-green w-fit self-start"
 				onClick={() =>
-					navigate({ search: { mapId: undefined, page: currentPage } })
+					navigate({
+						search: { mapId: undefined, page: currentPage },
+						resetScroll: false,
+					})
 				}
 			>
 				X

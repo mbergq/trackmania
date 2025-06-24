@@ -195,6 +195,7 @@ function RouteComponent() {
 														page: page,
 														mapId: cell.row.original.mapId,
 													},
+													resetScroll: false,
 												});
 											}}
 										>
