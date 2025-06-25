@@ -19,6 +19,7 @@ import { TrackmaniaText } from "@/components/TrackmaniaText";
 import { Suspense, useState } from "react";
 import { z } from "zod";
 import { Loader } from "lucide-react";
+import { Button } from "@/components/Button";
 
 export const Route = createFileRoute("/(app)/records")({
 	validateSearch: z.object({
@@ -123,10 +124,9 @@ function RouteComponent() {
 					</span>
 				</div>
 
-				<div className="flex gap-x-2">
-					<button
-						type="button"
-						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150 text-tm-green"
+				<div className="flex gap-x-2 mb-1">
+					<Button
+						content="Previous"
 						onClick={() => {
 							setPagination({
 								pageIndex: pagination.pageIndex - 1,
@@ -139,12 +139,9 @@ function RouteComponent() {
 							});
 						}}
 						disabled={!table.getCanPreviousPage()}
-					>
-						Previous
-					</button>
-					<button
-						type="button"
-						className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors duration-150 text-tm-green"
+					/>
+					<Button
+						content="Next"
 						onClick={() => {
 							setPagination({
 								pageIndex: pagination.pageIndex + 1,
@@ -157,9 +154,7 @@ function RouteComponent() {
 							});
 						}}
 						disabled={!table.getCanNextPage()}
-					>
-						Next
-					</button>
+					/>
 				</div>
 			</div>
 			{mapPromise && (
@@ -175,17 +170,14 @@ function RouteComponent() {
 			)}
 			<div className="rounded-lg shadow-lg">
 				<table className="bg-tm-grey w-full border-collapse">
-					<tbody className="border-t border-gray-700">
+					<tbody>
 						{table.getRowModel().rows.map((row) => (
-							<tr
-								key={row.id}
-								className="border-b border-gray-700 hover:bg-gray-700 transition-colors duration-150"
-							>
+							<tr key={row.id} className="border-b-2 border-background-blue">
 								{row.getVisibleCells().map((cell) => (
 									<td key={cell.id} className="px-4 py-2">
 										<button
 											type="button"
-											className="w-full h-full text-left"
+											className="w-full h-full text-left cursor-pointer p-2"
 											onClick={() => {
 												if (cell.row.original.mapId === mapId) {
 													return;
