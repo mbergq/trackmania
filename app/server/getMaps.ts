@@ -30,7 +30,8 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 				silver_score,
 				submitter,
 				thumbnail_url,
-				timestamp
+				timestamp,
+				created_at
 			FROM maps
 		`)
 		.all() as DBMapsInfo;
@@ -61,8 +62,28 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 			}) as unknown as number,
 		}));
 	};
+
+	const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+	// If database has not been updated for over a week, fetch and insert new records
+	if (new Date(`${res[0].created_at}Z`) <= sevenDaysAgo) {
+		console.log(
+			"--- Seven days since database was last updated, fetching and inserting new data...",
+		);
+		const { responseData } = await tmCoreClient.getRecords();
+		const mapIds: string[] = responseData.map((x) => x.mapId);
+		const ranges = getRanges(responseData.length, 200);
+		for (const range of ranges) {
+			const mapIdList = reformatIds(mapIds, range.start, range.end);
+			const mapsInfo = await tmCoreClient.getMapsInfo(mapIdList);
+			insertMapsIntoDatabase(mapsInfo.responseData);
+		}
+		return getData();
+	}
+
 	// If there is no data stored in the DB, insert all data first and then return it
 	if (res.length === 0) {
+		console.log("--- No data found, fetching and inserting");
 		const { responseData } = await tmCoreClient.getRecords();
 		const mapIds: string[] = responseData.map((x) => x.mapId);
 		const ranges = getRanges(responseData.length, 200);

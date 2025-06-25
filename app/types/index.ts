@@ -34,6 +34,7 @@ type DBMapsInfo = {
 	submitter: string;
 	thumbnail_url: string;
 	timestamp: number;
+	created_at: Date;
 }[];
 
 type MapsInfo = {
@@ -56,6 +57,7 @@ type MapsInfo = {
 	submitter: string;
 	thumbnailUrl: string;
 	timestamp: Date;
+	created_at: Date;
 }[];
 
 type MapInfo = {

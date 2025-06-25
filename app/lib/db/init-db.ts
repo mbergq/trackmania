@@ -18,5 +18,6 @@ export const createMapsTable = `CREATE TABLE IF NOT EXISTS maps (
     map_type TEXT,
     submitter TEXT,
     thumbnail_url TEXT,
-    timestamp INTEGER NOT NULL
+    timestamp INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`;
