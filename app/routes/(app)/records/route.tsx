@@ -27,6 +27,14 @@ export const Route = createFileRoute("/(app)/records")({
 		mapId: z.string().optional(),
 	}),
 	loaderDeps: ({ search }) => ({ mapId: search.mapId, page: search.page }),
+	pendingComponent: () => {
+		return (
+			<div className="fixed inset-0 flex items-center justify-center bg-opacity-30 backdrop-blur-md z-50">
+				<Loader className="animate-spin text-tm-green" />
+				<span>Please wait a moment while we're collecting the data..</span>
+			</div>
+		);
+	},
 	loader: async ({ deps: { mapId, page } }) => {
 		const maps = await getMapsFn();
 
