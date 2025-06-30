@@ -31,7 +31,7 @@ export const Route = createFileRoute("/(app)/records")({
 		return (
 			<div className="fixed inset-0 flex items-center justify-center bg-opacity-30 backdrop-blur-md z-50">
 				<Loader className="animate-spin text-tm-green" />
-				<span>Please wait a moment while we're collecting the data..</span>
+				<span>Please wait a moment while we're collecting data..</span>
 			</div>
 		);
 	},

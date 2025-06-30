@@ -9,35 +9,36 @@ import type { DBMapsInfo } from "@/types";
 import { createServerFn } from "@tanstack/react-start";
 
 export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
-	const res = db
-		.query(`
-			SELECT
-				author,
-				author_score,
-				bronze_score,
-				collection_name,
-				created_with_gamepad_editor,
-				created_with_simple_editor,
-				file_url,
-				filename,
-				gold_score,
-				is_playable,
-				map_id,
-				map_style,
-				map_type,
-				map_uid,
-				name,
-				silver_score,
-				submitter,
-				thumbnail_url,
-				timestamp,
-				created_at
-			FROM maps
-		`)
-		.all() as DBMapsInfo;
+	const queryAllMaps = () =>
+		db
+			.query(`
+				SELECT
+					author,
+					author_score,
+					bronze_score,
+					collection_name,
+					created_with_gamepad_editor,
+					created_with_simple_editor,
+					file_url,
+					filename,
+					gold_score,
+					is_playable,
+					map_id,
+					map_style,
+					map_type,
+					map_uid,
+					name,
+					silver_score,
+					submitter,
+					thumbnail_url,
+					timestamp,
+					created_at
+				FROM maps
+			`)
+			.all() as DBMapsInfo;
 
-	const getData = () => {
-		return res.map((x) => ({
+	const mapRowsToCamel = (rows: DBMapsInfo) =>
+		rows.map((x) => ({
 			author: x.author,
 			authorScore: x.author_score,
 			bronzeScore: x.bronze_score,
@@ -61,7 +62,8 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 				timeStyle: "short",
 			}) as unknown as number,
 		}));
-	};
+
+	let rows = queryAllMaps();
 
 	const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -74,22 +76,24 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 			const mapsInfo = await tmCoreClient.getMapsInfo(mapIdList);
 			insertMapsIntoDatabase(mapsInfo.responseData);
 		}
-		return getData();
+		// Re-query the database after inserts so we return up-to-date rows
+		rows = queryAllMaps();
+		return mapRowsToCamel(rows);
 	};
 
 	// If there is no data stored in the DB, insert all data first and then return it
-	if (res.length === 0) {
+	if (rows.length === 0) {
 		console.log("--- No data found, fetching and inserting");
 		return updateDB();
 	}
 
 	// If database has not been updated for over a week, fetch and insert new records
-	if (res.length !== 0 && new Date(`${res[0].created_at}Z`) <= sevenDaysAgo) {
+	if (rows.length !== 0 && new Date(`${rows[0].created_at}Z`) <= sevenDaysAgo) {
 		console.log(
 			"--- Seven days since database was last updated, fetching and inserting new data...",
 		);
 		return updateDB();
 	}
 
-	return getData();
+	return mapRowsToCamel(rows);
 });
