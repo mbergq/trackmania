@@ -65,7 +65,7 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 
 	const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-	const refreshDB = async () => {
+	const updateDB = async () => {
 		const { responseData } = await tmCoreClient.getRecords();
 		const mapIds: string[] = responseData.map((x) => x.mapId);
 		const ranges = getRanges(responseData.length, 200);
@@ -80,7 +80,7 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 	// If there is no data stored in the DB, insert all data first and then return it
 	if (res.length === 0) {
 		console.log("--- No data found, fetching and inserting");
-		return refreshDB();
+		return updateDB();
 	}
 
 	// If database has not been updated for over a week, fetch and insert new records
@@ -88,7 +88,7 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 		console.log(
 			"--- Seven days since database was last updated, fetching and inserting new data...",
 		);
-		return refreshDB();
+		return updateDB();
 	}
 
 	return getData();
