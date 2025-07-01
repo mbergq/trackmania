@@ -8,15 +8,19 @@ import {
 	flexRender,
 	getCoreRowModel,
 	getPaginationRowModel,
+	getSortedRowModel,
+	getFilteredRowModel,
 	useReactTable,
+	type FilterFn,
 } from "@tanstack/react-table";
+import { type RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import authorMedal from "@/assets/medals/medal_author.png";
 import goldMedal from "@/assets/medals/medal_gold.png";
 import silverMedal from "@/assets/medals/medal_silver.png";
 import bronzeMedal from "@/assets/medals/medal_bronze.png";
 import { MapModal } from "@/components/MapModal";
 import { TrackmaniaText } from "@/components/TrackmaniaText";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { z } from "zod";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/Button";
@@ -48,6 +52,21 @@ export const Route = createFileRoute("/(app)/records")({
 	},
 	component: RouteComponent,
 });
+declare module "@tanstack/react-table" {
+	//add fuzzy filter to the filterFns
+	interface FilterFns {
+		fuzzy: FilterFn<unknown>;
+	}
+	interface FilterMeta {
+		itemRank: RankingInfo;
+	}
+}
+
+const fuzzyFilter: FilterFn<boolean> = (row, columnId, value, addMeta) => {
+	const itemRank = rankItem(row.getValue("filename"), value);
+	addMeta({ itemRank });
+	return itemRank.passed;
+};
 
 function RouteComponent() {
 	const { maps: data, mapPromise } = Route.useLoaderData();
@@ -55,6 +74,8 @@ function RouteComponent() {
 		select: (search) => ({ mapId: search.mapId, page: search.page }),
 		structuralSharing: true,
 	});
+
+	const [globalFilter, setGlobalFilter] = useState("");
 
 	const [pagination, setPagination] = useState({
 		pageIndex: page - 1,
@@ -83,7 +104,7 @@ function RouteComponent() {
 		columnHelper.accessor("thumbnailUrl", {
 			cell: (info) => (
 				<img
-					className="w-36 h-24 object-cover rounded shadow-md"
+					className="w-48 h-36 object-cover rounded shadow-md"
 					src={info.getValue()}
 					alt="thumbnail"
 				/>
@@ -114,22 +135,35 @@ function RouteComponent() {
 	];
 
 	const table = useReactTable({
-		data,
 		columns,
+		data,
+		filterFns: {
+			fuzzy: fuzzyFilter,
+		},
+		globalFilterFn: "fuzzy",
+		getFilteredRowModel: getFilteredRowModel(),
 		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		state: {
 			pagination,
+			globalFilter,
 		},
 	});
 
 	return (
 		<div className="text-white p-4">
 			<div className="mt-4 flex items-center justify-between font-mono">
-				<div className="flex gap-x-2 items-center">
+				<div className="flex gap-x-4 items-center">
 					<span className="text-sm">
 						Page {page} of {table.getPageCount()}
 					</span>
+					<DebouncedInput
+						value={globalFilter}
+						onChange={(value) => setGlobalFilter(String(value))}
+						placeholder="Search by filename..."
+						className="px-2 py-1 rounded border bg-white text-black"
+					/>
 				</div>
 
 				<div className="flex gap-x-2 mb-1">
@@ -212,5 +246,38 @@ function RouteComponent() {
 				</table>
 			</div>
 		</div>
+	);
+}
+
+function DebouncedInput({
+	value: initialValue,
+	onChange,
+	debounce = 500,
+	...props
+}: {
+	value: string | number;
+	onChange: (value: string | number) => void;
+	debounce?: number;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
+	const [value, setValue] = useState(initialValue);
+
+	useEffect(() => {
+		setValue(initialValue);
+	}, [initialValue]);
+
+	useEffect(() => {
+		const timeout = window.setTimeout(() => {
+			onChange(value);
+		}, debounce);
+
+		return () => clearTimeout(timeout);
+	}, [value, debounce, onChange]);
+
+	return (
+		<input
+			{...props}
+			value={value}
+			onChange={(e) => setValue(e.target.value)}
+		/>
 	);
 }

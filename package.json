@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"@tailwindcss/postcss": "^4.1.5",
+		"@tanstack/match-sorter-utils": "^8.19.4",
 		"@tanstack/react-router": "^1.119.0",
 		"@tanstack/react-start": "^1.119.2",
 		"@tanstack/react-table": "^8.21.3",
