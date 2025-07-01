@@ -62,7 +62,7 @@ declare module "@tanstack/react-table" {
 	}
 }
 
-const fuzzyFilter: FilterFn<boolean> = (row, columnId, value, addMeta) => {
+const fuzzyFilter: FilterFn<boolean> = (row, _columnId, value, addMeta) => {
 	const itemRank = rankItem(row.getValue("filename"), value);
 	addMeta({ itemRank });
 	return itemRank.passed;
@@ -101,6 +101,10 @@ function RouteComponent() {
 	};
 
 	const columns = [
+		columnHelper.accessor("filename", {
+			id: "filename",
+			cell: (info) => info.getValue(),
+		}),
 		columnHelper.accessor("thumbnailUrl", {
 			cell: (info) => (
 				<img
@@ -148,6 +152,9 @@ function RouteComponent() {
 		state: {
 			pagination,
 			globalFilter,
+			columnVisibility: {
+				filename: false,
+			},
 		},
 	});
 
@@ -161,7 +168,7 @@ function RouteComponent() {
 					<DebouncedInput
 						value={globalFilter}
 						onChange={(value) => setGlobalFilter(String(value))}
-						placeholder="Search by filename..."
+						placeholder="Search by map name..."
 						className="px-2 py-1 rounded border bg-white text-black"
 					/>
 				</div>
