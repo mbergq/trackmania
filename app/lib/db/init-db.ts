@@ -21,3 +21,9 @@ export const createMapsTable = `CREATE TABLE IF NOT EXISTS maps (
     timestamp INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`;
+
+export const createSessionTable = `CREATE TABLE IF NOT EXISTS session (
+    id TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)`;

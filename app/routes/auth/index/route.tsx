@@ -11,7 +11,16 @@ function RouteComponent() {
 
 	return (
 		<div>
-			<button type="button" onClick={() => cookieFn()}>
+			<button
+				type="button"
+				onClick={() =>
+					cookieFn({
+						data: {
+							username: "martin",
+						},
+					})
+				}
+			>
 				Test me
 			</button>
 			Hello "/auth/"!
