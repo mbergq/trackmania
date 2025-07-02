@@ -8,6 +8,7 @@ import {
 import icon from "@/assets/favicon/tm.ico";
 
 import appCss from "@/styles/app.css?url";
+import { getAuth } from "@/server/getAuth";
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -34,6 +35,9 @@ export const Route = createRootRoute({
 			},
 		],
 	}),
+	beforeLoad: async () => {
+		return await getAuth();
+	},
 	component: RootComponent,
 });
 
