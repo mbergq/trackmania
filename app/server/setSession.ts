@@ -7,7 +7,7 @@ const data = z.object({
 	username: z.string(),
 });
 
-export const cookie = createServerFn({ method: "POST" })
+export const setSessionFn = createServerFn({ method: "POST" })
 	.validator(data)
 	.handler(async ({ data }) => {
 		const UUID = crypto.randomUUID();

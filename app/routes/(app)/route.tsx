@@ -8,10 +8,18 @@ import {
 export const Route = createFileRoute("/(app)")({
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
-		console.log(context.isAuth);
 		if (!context.isAuth) {
 			throw redirect({ to: "/auth" });
 		}
+
+		return {
+			...context,
+		};
+	},
+	loader: ({ context }) => {
+		return {
+			user: context.username,
+		};
 	},
 });
 
