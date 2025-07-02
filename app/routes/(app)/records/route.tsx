@@ -138,9 +138,33 @@ function RouteComponent() {
 		}),
 	];
 
+	const fallbackData: MapInfo[] = [
+		{
+			author: "No author available",
+			authorScore: 0,
+			bronzeScore: 0,
+			collectionName: "",
+			createdWithGamepadEditor: false,
+			createdWithSimpleEditor: false,
+			fileUrl: "",
+			filename: "No records available",
+			goldScore: 0,
+			isPlayable: false,
+			mapId: "",
+			mapStyle: "",
+			mapType: "",
+			mapUid: "",
+			name: "No records available",
+			silverScore: 0,
+			submitter: "",
+			thumbnailUrl: "https://via.placeholder.com/192x144?text=No+Image",
+			timestamp: 0,
+		},
+	];
+
 	const table = useReactTable({
 		columns,
-		data,
+		data: data ?? fallbackData,
 		filterFns: {
 			fuzzy: fuzzyFilter,
 		},
