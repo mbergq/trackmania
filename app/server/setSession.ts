@@ -10,12 +10,17 @@ const data = z.object({
 export const setSessionFn = createServerFn({ method: "POST" })
 	.validator(data)
 	.handler(async ({ data }) => {
-		const UUID = crypto.randomUUID();
 		const session = {
-			id: UUID,
+			id: crypto.randomUUID(),
 			username: data.username,
 		};
-		setCookie("authNCookie", session.id);
+		setCookie("authNCookie", session.id, {
+			httpOnly: true,
+			secure: true,
+			sameSite: "lax",
+			maxAge: 3600,
+			path: "/",
+		});
 		db.run("INSERT INTO session (id, username) VALUES (?, ?)", [
 			session.id,
 			session.username,

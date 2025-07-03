@@ -1,19 +1,48 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { getCookie, getWebRequest } from "@tanstack/react-start/server";
 import { db } from "@/lib/db";
+import { z } from "zod";
 
 type Session = {
 	id: string;
 	username: string;
 };
 
+const sessionSchema = z.string().uuid();
+
 const authN = createMiddleware().server(async ({ next }) => {
 	const request = getWebRequest();
 	if (!request) {
 		throw new Error("Missing request");
 	}
-	const sessionId = await getCookie("authNCookie");
-	if (!sessionId) {
+	if (
+		typeof request.method !== "string" ||
+		!request.headers ||
+		typeof request.headers.get !== "function"
+	) {
+		throw new Error("Invalid web request");
+	}
+
+	const userAgent = request.headers.get("user-agent") || "";
+	if (!userAgent) {
+		throw new Error("User-Agent header missing");
+	}
+
+	const sessionIdRaw = await getCookie("authNCookie");
+	if (!sessionIdRaw) {
+		return await next({
+			context: {
+				isAuth: false,
+				username: "",
+			},
+		});
+	}
+
+	let sessionId: string;
+
+	try {
+		sessionId = sessionSchema.parse(sessionIdRaw);
+	} catch {
 		return await next({
 			context: {
 				isAuth: false,
