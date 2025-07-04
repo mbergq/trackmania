@@ -9,11 +9,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm, type SubmitHandler, Controller } from "react-hook-form";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
 
 type Inputs = {
 	username: string;
-	passcode: number;
+	passcode: string;
 };
+
+const schema = z.object({
+	username: z
+		.string()
+		.min(1, "Username is required")
+		.regex(/^[a-zA-Z]+$/, "Username must contain only letters"),
+	passcode: z
+		.string()
+		.length(8, "Passcode must be exactly 8 digits")
+		.regex(/^\d+$/, "Passcode must contain only digits"),
+});
 
 export const Route = createFileRoute("/auth/")({
 	component: RouteComponent,
@@ -32,8 +45,15 @@ function RouteComponent() {
 		watch,
 		control,
 		formState: { errors },
-	} = useForm<Inputs>();
-	const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+	} = useForm<Inputs>({ resolver: zodResolver(schema) });
+	const onSubmit: SubmitHandler<Inputs> = (data) => {
+		setSession({
+			data: {
+				username: data.username,
+				passcode: data.passcode,
+			},
+		});
+	};
 
 	return (
 		<div className="flex justify-center items-center h-dvh">
@@ -45,6 +65,11 @@ function RouteComponent() {
 					{...register("username")}
 					required={true}
 				/>
+				{errors.username && (
+					<p className="text-red-500 font-mono text-sm">
+						{errors.username.message}
+					</p>
+				)}
 				<span className="text-white font-mono">Passcode</span>
 				<Controller
 					name="passcode"
@@ -53,7 +78,7 @@ function RouteComponent() {
 						<InputOTP
 							maxLength={8}
 							pattern={REGEXP_ONLY_DIGITS}
-							value={field.value?.toString()}
+							value={field.value}
 							onChange={field.onChange}
 							onBlur={field.onBlur}
 							ref={field.ref}
@@ -71,20 +96,10 @@ function RouteComponent() {
 						</InputOTP>
 					)}
 				/>
-				<button type="submit">Click</button>
+				<button type="submit" className="hidden">
+					Send
+				</button>
 			</form>
 		</div>
 	);
 }
-/* <button
-	type="button"
-	onClick={() =>
-		setSession({
-			data: {
-				username: "martin",
-			},
-		})
-	}
->
-	Test me
-</button> */
