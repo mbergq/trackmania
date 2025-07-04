@@ -8,8 +8,6 @@ type Session = {
 	username: string;
 };
 
-const sessionSchema = z.string().uuid();
-
 const authN = createMiddleware().server(async ({ next }) => {
 	const request = getWebRequest();
 	if (!request) {
@@ -41,7 +39,7 @@ const authN = createMiddleware().server(async ({ next }) => {
 	let sessionId: string;
 
 	try {
-		sessionId = sessionSchema.parse(sessionIdRaw);
+		sessionId = z.string().uuid().parse(sessionIdRaw);
 	} catch {
 		return await next({
 			context: {
