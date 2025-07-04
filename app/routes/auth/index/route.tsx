@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { setSessionFn } from "@/server/setSession";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -11,6 +11,7 @@ import { useForm, type SubmitHandler, Controller } from "react-hook-form";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { useState } from "react";
 
 type Inputs = {
 	username: string;
@@ -39,20 +40,33 @@ export const Route = createFileRoute("/auth/")({
 
 function RouteComponent() {
 	const setSession = useServerFn(setSessionFn);
+	const [showCar, setShowCar] = useState(false);
+	const navigate = useNavigate();
+
+	const triggerAnimation = () => {
+		setShowCar(true);
+		setTimeout(() => setShowCar(false), 1000);
+	};
 	const {
 		register,
 		handleSubmit,
-		watch,
 		control,
 		formState: { errors },
 	} = useForm<Inputs>({ resolver: zodResolver(schema) });
-	const onSubmit: SubmitHandler<Inputs> = (data) => {
-		setSession({
+	const onSubmit: SubmitHandler<Inputs> = async (data) => {
+		const { username, passcode } = data;
+		const res = await setSession({
 			data: {
-				username: data.username,
-				passcode: data.passcode,
+				username: username,
+				passcode: passcode,
 			},
 		});
+		if (res.success) {
+			triggerAnimation();
+			setTimeout(() => {
+				navigate({ to: "/" });
+			}, 1000);
+		}
 	};
 
 	return (
@@ -99,6 +113,11 @@ function RouteComponent() {
 				<button type="submit" className="hidden">
 					Send
 				</button>
+				{showCar && (
+					<div className="text-4xl animate-slide-fade pointer-events-none select-none">
+						🚗
+					</div>
+				)}
 			</form>
 		</div>
 	);

@@ -4,6 +4,7 @@ import { setCookie } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { PASSCODE } from "@/constants";
 import { redirect } from "@tanstack/react-router";
+import { json } from "@tanstack/react-start";
 
 const data = z.object({
 	username: z.string(),
@@ -14,7 +15,7 @@ export const setSessionFn = createServerFn({ method: "POST" })
 	.validator(data)
 	.handler(async ({ data }) => {
 		if (data.passcode !== PASSCODE) {
-			return "Invalid passcode";
+			return { success: false, error: "Invalid passcode" };
 		}
 
 		const session = {
@@ -32,5 +33,6 @@ export const setSessionFn = createServerFn({ method: "POST" })
 			session.id,
 			session.username,
 		]);
-		throw redirect({ to: "/" });
+
+		return { success: true };
 	});
