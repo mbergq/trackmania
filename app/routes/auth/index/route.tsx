@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useState } from "react";
 import tmCar from "@/assets/tm-car.svg";
+import { getCookie } from "@tanstack/react-start/server";
 
 type Inputs = {
 	username: string;
@@ -37,12 +38,21 @@ export const Route = createFileRoute("/auth/")({
 			throw redirect({ to: "/" });
 		}
 	},
+	loader: () => {
+		const username = getCookie("username");
+		return {
+			username,
+		};
+	},
 });
 
 function RouteComponent() {
 	const setSession = useServerFn(setSessionFn);
-	const [showCar, setShowCar] = useState(true);
+	const [showCar, setShowCar] = useState(false);
 	const navigate = useNavigate();
+	const data = Route.useLoaderData();
+	const { username } = data;
+	const defaultName = username ?? "";
 
 	const triggerAnimation = () => {
 		setShowCar(true);
@@ -73,10 +83,17 @@ function RouteComponent() {
 	return (
 		<div className="flex justify-center items-center h-dvh">
 			<form className="flex flex-col gap-y-2" onSubmit={handleSubmit(onSubmit)}>
-				<span className="text-white font-mono">Who are you then?</span>
+				{defaultName ? (
+					<span className="text-white font-mono italic">
+						Hello {defaultName}
+					</span>
+				) : (
+					<span className="text-white font-mono">Who are you then?</span>
+				)}
 				<Input
 					className="border-gray-800 bg-gray-700 text-tm-green"
 					placeholder="Username.."
+					defaultValue={defaultName}
 					{...register("username")}
 					required={true}
 				/>

@@ -14,20 +14,27 @@ const data = z.object({
 export const setSessionFn = createServerFn({ method: "POST" })
 	.validator(data)
 	.handler(async ({ data }) => {
-		if (data.passcode !== PASSCODE) {
+		const { username, passcode } = data;
+		if (passcode !== PASSCODE) {
 			return { success: false, error: "Invalid passcode" };
 		}
 
 		const session = {
 			id: crypto.randomUUID(),
-			username: data.username,
+			username: username,
 		};
 		setCookie("authNCookie", session.id, {
 			httpOnly: true,
 			secure: true,
 			sameSite: "lax",
-			maxAge: 3600,
+			maxAge: 3600, // 1 hour
 			path: "/",
+		});
+		setCookie("username", username, {
+			httpOnly: false,
+			secure: true,
+			sameSite: "lax",
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 		});
 		db.run("INSERT INTO session (id, username) VALUES (?, ?)", [
 			session.id,
