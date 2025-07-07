@@ -12,6 +12,7 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useState } from "react";
+import tmCar from "@/assets/tm-car.svg";
 
 type Inputs = {
 	username: string;
@@ -40,7 +41,7 @@ export const Route = createFileRoute("/auth/")({
 
 function RouteComponent() {
 	const setSession = useServerFn(setSessionFn);
-	const [showCar, setShowCar] = useState(false);
+	const [showCar, setShowCar] = useState(true);
 	const navigate = useNavigate();
 
 	const triggerAnimation = () => {
@@ -113,12 +114,16 @@ function RouteComponent() {
 				<button type="submit" className="hidden">
 					Send
 				</button>
-				{showCar && (
-					<div className="text-4xl animate-slide-fade pointer-events-none select-none">
-						🚗
-					</div>
-				)}
 			</form>
+			{showCar && (
+				<div className="fixed -translate-x-[122px] translate-y-[102px] pointer-events-none select-none">
+					<img
+						src={tmCar}
+						alt="Trackmania stadium car model"
+						className="w-12 h-12 animate-slide-fade"
+					/>
+				</div>
+			)}
 		</div>
 	);
 }
