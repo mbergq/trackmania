@@ -7,7 +7,8 @@ import goldMedal from "@/assets/medals/medal_gold.png";
 import silverMedal from "@/assets/medals/medal_silver.png";
 import bronzeMedal from "@/assets/medals/medal_bronze.png";
 import { TrackmaniaText } from "./TrackmaniaText";
-
+import { Button } from "@/components/Button";
+import { SquareX } from "lucide-react";
 type Props = {
 	mapPromise: ReturnType<typeof getMapRecordsFn>;
 	currentPage: number;
@@ -53,19 +54,17 @@ export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 	const mapInfo = map.mapInfo.responseData;
 
 	return (
-		<div className="bg-gray-600 w-lg h-96 fixed left-154 rounded-lg shadow-lg text-white p-4 overflow-y-auto flex flex-col gap-y-2">
-			<button
-				type="button"
-				className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors duration-150 text-tm-green w-fit self-start"
+		<div className="bg-gray-800 w-lg h-96 fixed left-154 rounded-lg text-white p-4 overflow-y-auto flex flex-col gap-y-2 border-2 border-background-blue">
+			<SquareX
+				size={28}
 				onClick={() =>
 					navigate({
 						search: { mapId: undefined, page: currentPage },
 						resetScroll: false,
 					})
 				}
-			>
-				X
-			</button>
+				className="cursor-pointer text-tm-green"
+			/>
 			<div className="flex flex-row items-center gap-x-2">
 				<img
 					className="w-56 h-36 object-cover rounded shadow-md"
@@ -77,9 +76,11 @@ export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 			{mapRecord?.map((x) => (
 				<div
 					key={x.mapId}
-					className="flex flex-row gap-x-2 gap-y-1 bg-gray-800 rounded p-3 mb-2"
+					className="flex flex-row gap-x-2 gap-y-1 bg-gray-900 rounded p-3 mb-2"
 				>
-					<p className="font-mono">Your PB: {formatTime(x.recordScore.time)}</p>
+					<span className="font-mono">
+						Your PB: {formatTime(x.recordScore.time)}
+					</span>
 					{calculatePb(
 						x.recordScore.time,
 						mapInfo.bronzeScore,
@@ -87,9 +88,6 @@ export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 						mapInfo.goldScore,
 						mapInfo.authorScore,
 					)}
-					{/* <p className="text-sm text-gray-300">
-						Record driven: {new Date(x.timestamp).toLocaleString()}
-					</p> */}
 				</div>
 			))}
 		</div>

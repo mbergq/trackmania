@@ -58,6 +58,7 @@ function RouteComponent() {
 		setShowCar(true);
 		setTimeout(() => setShowCar(false), 1000);
 	};
+
 	const {
 		register,
 		handleSubmit,
