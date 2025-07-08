@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useState } from "react";
 import tmCar from "@/assets/tm-car.svg";
-import { getCookie } from "@tanstack/react-start/server";
+import { getUsernameFn } from "@/server/getUsername";
 
 type Inputs = {
 	username: string;
@@ -38,11 +38,9 @@ export const Route = createFileRoute("/auth/")({
 			throw redirect({ to: "/" });
 		}
 	},
-	loader: () => {
-		const username = getCookie("username");
-		return {
-			username,
-		};
+	loader: async () => {
+		const username = await getUsernameFn();
+		return username;
 	},
 });
 
@@ -52,7 +50,7 @@ function RouteComponent() {
 	const navigate = useNavigate();
 	const data = Route.useLoaderData();
 	const { username } = data;
-	const defaultName = username ?? "";
+	const defaultUsername = username ?? "";
 
 	const triggerAnimation = () => {
 		setShowCar(true);
@@ -84,9 +82,9 @@ function RouteComponent() {
 	return (
 		<div className="flex justify-center items-center h-dvh">
 			<form className="flex flex-col gap-y-2" onSubmit={handleSubmit(onSubmit)}>
-				{defaultName ? (
+				{defaultUsername ? (
 					<span className="text-white font-mono italic">
-						Hello {defaultName}
+						Hello {defaultUsername}
 					</span>
 				) : (
 					<span className="text-white font-mono">Who are you then?</span>
@@ -94,7 +92,7 @@ function RouteComponent() {
 				<Input
 					className="border-gray-800 bg-gray-700 text-tm-green"
 					placeholder="Username.."
-					defaultValue={defaultName}
+					defaultValue={defaultUsername}
 					{...register("username")}
 					required={true}
 				/>

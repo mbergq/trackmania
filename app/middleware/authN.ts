@@ -55,7 +55,7 @@ const authN = createMiddleware().server(async ({ next }) => {
 	return await next({
 		context: {
 			isAuth: result.length > 0,
-			username: result[0].username,
+			username: result.length > 0 ? result[0].username : "",
 		},
 	});
 });
