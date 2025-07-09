@@ -7,7 +7,6 @@ import goldMedal from "@/assets/medals/medal_gold.png";
 import silverMedal from "@/assets/medals/medal_silver.png";
 import bronzeMedal from "@/assets/medals/medal_bronze.png";
 import { TrackmaniaText } from "./TrackmaniaText";
-import { Button } from "@/components/Button";
 import { SquareX } from "lucide-react";
 type Props = {
 	mapPromise: ReturnType<typeof getMapRecordsFn>;
@@ -54,16 +53,15 @@ export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 	const mapInfo = map.mapInfo.responseData;
 
 	return (
-		<div className="bg-gray-800 w-lg h-96 fixed left-154 rounded-lg text-white p-4 overflow-y-auto flex flex-col gap-y-2 border-2 border-background-blue">
+		<div className="w-lg shadow-2xl h-96 fixed left-154 rounded-lg text-white p-4 overflow-y-auto flex flex-col gap-y-2">
 			<SquareX
-				size={28}
 				onClick={() =>
 					navigate({
 						search: { mapId: undefined, page: currentPage },
 						resetScroll: false,
 					})
 				}
-				className="cursor-pointer text-tm-green"
+				className="cursor-pointer text-primary-foreground"
 			/>
 			<div className="flex flex-row items-center gap-x-2">
 				<img

@@ -23,7 +23,8 @@ import { TrackmaniaText } from "@/components/TrackmaniaText";
 import { Suspense, useEffect, useState } from "react";
 import { z } from "zod";
 import { Loader } from "lucide-react";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/(app)/records")({
 	validateSearch: z.object({
@@ -184,16 +185,15 @@ function RouteComponent() {
 
 	return (
 		<div className="text-white p-4">
-			<div className="mt-4 flex items-center justify-between font-mono">
-				<div className="flex gap-x-4 items-center">
-					<span className="text-sm">
+			<div className="mt-4 flex items-center justify-around font-mono">
+				<div className="flex items-center gap-x-4">
+					<span className="text-sm w-40">
 						Page {page} of {table.getPageCount()}
 					</span>
 					<DebouncedInput
 						value={globalFilter}
 						onChange={(value) => setGlobalFilter(String(value))}
 						placeholder="Search by map name..."
-						className="px-2 py-1 rounded border bg-white text-black"
 					/>
 				</div>
 
@@ -212,9 +212,11 @@ function RouteComponent() {
 							});
 						}}
 						disabled={!table.getCanPreviousPage()}
-					/>
+						className="bg-tm-grey cursor-pointer"
+					>
+						Previous
+					</Button>
 					<Button
-						content="Next"
 						onClick={() => {
 							setPagination({
 								pageIndex: pagination.pageIndex + 1,
@@ -227,7 +229,10 @@ function RouteComponent() {
 							});
 						}}
 						disabled={!table.getCanNextPage()}
-					/>
+						className="bg-tm-grey cursor-pointer"
+					>
+						Next
+					</Button>
 				</div>
 			</div>
 			{mapPromise && (
@@ -305,10 +310,11 @@ function DebouncedInput({
 	}, [value, debounce, onChange]);
 
 	return (
-		<input
+		<Input
 			{...props}
 			value={value}
 			onChange={(e) => setValue(e.target.value)}
+			className="bg-tm-grey"
 		/>
 	);
 }
