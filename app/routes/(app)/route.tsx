@@ -35,7 +35,9 @@ function RouteComponent() {
 		<div className="h-dvh text-white">
 			<header className="bg-tm-grey shadow-md">
 				<div className="py-3">
-					<h1 className="text-2xl font-bold text-center mb-3">Trackmania</h1>
+					<h1 className="text-2xl text-center font-extrabold mb-2">
+						Trackmania
+					</h1>
 					<nav className="flex justify-center gap-x-4">
 						<NavigationMenu>
 							<NavigationMenuList>

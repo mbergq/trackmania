@@ -185,7 +185,7 @@ function RouteComponent() {
 
 	return (
 		<div className="text-white p-4">
-			<div className="mt-4 flex items-center justify-around font-mono">
+			<div className="mt-4 flex items-center justify-around font-mono mb-1">
 				<div className="flex items-center gap-x-4">
 					<span className="text-sm w-40">
 						Page {page} of {table.getPageCount()}
@@ -197,7 +197,7 @@ function RouteComponent() {
 					/>
 				</div>
 
-				<div className="flex gap-x-2 mb-1">
+				<div className="flex gap-x-1">
 					<Button
 						content="Previous"
 						onClick={() => {
@@ -314,7 +314,7 @@ function DebouncedInput({
 			{...props}
 			value={value}
 			onChange={(e) => setValue(e.target.value)}
-			className="bg-tm-grey"
+			className="bg-tm-grey border-none"
 		/>
 	);
 }
