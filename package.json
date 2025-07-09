@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.1.1",
+		"@radix-ui/react-navigation-menu": "^1.2.13",
 		"@radix-ui/react-slot": "^1.2.3",
 		"@tailwindcss/postcss": "^4.1.5",
 		"@tanstack/match-sorter-utils": "^8.19.4",
