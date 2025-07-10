@@ -134,9 +134,6 @@ function RouteComponent() {
 				createMedalAccessor("bronzeScore", bronzeMedal, "Bronze"),
 			],
 		}),
-		columnHelper.accessor("timestamp", {
-			cell: (info) => <span className="font-mono">{info.getValue()}</span>,
-		}),
 	];
 
 	const fallbackData: MapInfo[] = [
