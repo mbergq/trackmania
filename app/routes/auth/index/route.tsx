@@ -17,6 +17,7 @@ import { getUsernameFn } from "@/server/getUsername";
 
 type Inputs = {
 	username: string;
+	password: string;
 	passcode: string;
 };
 
@@ -25,6 +26,21 @@ const schema = z.object({
 		.string()
 		.min(1, "Username is required")
 		.regex(/^[a-zA-Z]+$/, "Username must contain only letters"),
+	password: z
+		.string()
+		.min(8, "Password must be at least 8 characters long")
+		.refine((val) => /[A-Z]/.test(val), {
+			message: "Password must contain at least one uppercase letter",
+		})
+		.refine((val) => /[a-z]/.test(val), {
+			message: "Password must contain at least one lowercase letter",
+		})
+		.refine((val) => /\d/.test(val), {
+			message: "Password must contain at least one number",
+		})
+		.refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
+			message: "Password must contain at least one special character",
+		}),
 	passcode: z
 		.string()
 		.length(8, "Passcode must be exactly 8 digits")
@@ -51,6 +67,7 @@ function RouteComponent() {
 	const data = Route.useLoaderData();
 	const { username } = data;
 	const [defaultUsername, setDefaultUsername] = useState(username);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	const triggerAnimation = () => {
 		setShowCar(true);
@@ -64,10 +81,11 @@ function RouteComponent() {
 		formState: { errors },
 	} = useForm<Inputs>({ resolver: zodResolver(schema) });
 	const onSubmit: SubmitHandler<Inputs> = async (data) => {
-		const { username, passcode } = data;
+		const { username, password, passcode } = data;
 		const res = await setSession({
 			data: {
 				username: username,
+				password: password,
 				passcode: passcode,
 			},
 		});
@@ -76,6 +94,8 @@ function RouteComponent() {
 			setTimeout(() => {
 				navigate({ to: "/" });
 			}, 1000);
+		} else {
+			setErrorMessage(res.error || "An unknown error occurred");
 		}
 	};
 
@@ -101,6 +121,22 @@ function RouteComponent() {
 					<p className="text-red-500 font-mono text-sm">
 						{errors.username.message}
 					</p>
+				)}
+				<span className="text-white font-mono">Password</span>
+				<Input
+					type="password"
+					className="border-gray-800 bg-gray-700 text-tm-green"
+					placeholder="Password.."
+					{...register("password")}
+					required={true}
+				/>
+				{errors.password && (
+					<p className="text-red-500 font-mono text-sm">
+						{errors.password.message}
+					</p>
+				)}
+				{errorMessage && (
+					<span className="text-red-500 font-mono text-sm">{errorMessage}</span>
 				)}
 				<span className="text-white font-mono">Passcode</span>
 				<Controller

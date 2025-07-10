@@ -6,32 +6,42 @@ import { PASSCODE } from "@/constants";
 
 const data = z.object({
 	username: z.string(),
+	password: z.string(),
 	passcode: z.string(),
 });
 
 export const setSessionFn = createServerFn({ method: "POST" })
 	.validator(data)
 	.handler(async ({ data }) => {
-		const { username, passcode } = data;
+		const { username, password, passcode } = data;
 		if (passcode !== PASSCODE) {
 			return { success: false, error: "Invalid passcode" };
 		}
 
-		const existingRows = db
-			.query("SELECT id FROM session WHERE username = ?")
-			.all(username) as { id: string }[];
+		const res = db
+			.query("SELECT id, password FROM session WHERE username = ?")
+			.all(username) as { id: string; password: string }[];
 
 		const sessionId = crypto.randomUUID();
-		// Might add password as well later since identifying any username is kinda pointless
-		if (existingRows.length !== 0) {
+
+		if (res.length !== 0) {
+			const storedHash = res[0].password;
+			const isValid = await Bun.password.verify(password, storedHash);
+
+			if (!isValid) {
+				return { success: false, error: "Invalid password" };
+			}
+
 			db.run(
 				"UPDATE session SET id = ?, modified_at = CURRENT_TIMESTAMP WHERE username = ?",
 				[sessionId, username],
 			);
 		} else {
-			db.run("INSERT INTO session (id, username) VALUES (?, ?)", [
+			const passwordHash = await Bun.password.hash(password);
+			db.run("INSERT INTO session (id, username, password) VALUES (?, ?, ?)", [
 				sessionId,
 				username,
+				passwordHash,
 			]);
 		}
 

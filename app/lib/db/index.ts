@@ -37,6 +37,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS maps (
 
 db.exec(`CREATE TABLE IF NOT EXISTS session (
     id TEXT PRIMARY KEY,
-    username TEXT NOT NULL UNIQUE,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
