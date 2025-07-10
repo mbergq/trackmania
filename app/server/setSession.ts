@@ -17,11 +17,25 @@ export const setSessionFn = createServerFn({ method: "POST" })
 			return { success: false, error: "Invalid passcode" };
 		}
 
-		const session = {
-			id: crypto.randomUUID(),
-			username: username,
-		};
-		setCookie("authNCookie", session.id, {
+		const existingRows = db
+			.query("SELECT id FROM session WHERE username = ?")
+			.all(username) as { id: string }[];
+
+		const sessionId = crypto.randomUUID();
+		// Might add password as well later since identifying any username is kinda pointless
+		if (existingRows.length !== 0) {
+			db.run(
+				"UPDATE session SET id = ?, modified_at = CURRENT_TIMESTAMP WHERE username = ?",
+				[sessionId, username],
+			);
+		} else {
+			db.run("INSERT INTO session (id, username) VALUES (?, ?)", [
+				sessionId,
+				username,
+			]);
+		}
+
+		setCookie("authNCookie", sessionId, {
 			httpOnly: true,
 			secure: true,
 			sameSite: "lax",
@@ -34,10 +48,6 @@ export const setSessionFn = createServerFn({ method: "POST" })
 			sameSite: "lax",
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 		});
-		db.run("INSERT INTO session (id, username) VALUES (?, ?)", [
-			session.id,
-			session.username,
-		]);
 
 		return { success: true };
 	});

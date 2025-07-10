@@ -12,7 +12,7 @@ export const db = new Database("./data/tm-db.sqlite", {
 // Some performance enhancing query I probably don't need
 db.exec("PRAGMA journal_mode = WAL;");
 
-const createMapsTableQuery = db.query(`CREATE TABLE IF NOT EXISTS maps (
+db.exec(`CREATE TABLE IF NOT EXISTS maps (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     map_id TEXT NOT NULL UNIQUE,
     map_uid TEXT NOT NULL UNIQUE,
@@ -35,10 +35,8 @@ const createMapsTableQuery = db.query(`CREATE TABLE IF NOT EXISTS maps (
     timestamp INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
 
-const createSessionTableQuery = db.query(`CREATE TABLE IF NOT EXISTS session (
+db.exec(`CREATE TABLE IF NOT EXISTS session (
     id TEXT PRIMARY KEY,
-    username TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
-
-createMapsTableQuery.run();
-createSessionTableQuery.run();
+    username TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
