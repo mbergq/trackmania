@@ -50,7 +50,7 @@ function RouteComponent() {
 	const navigate = useNavigate();
 	const data = Route.useLoaderData();
 	const { username } = data;
-	const defaultUsername = username ?? "";
+	const [defaultUsername, setDefaultUsername] = useState(username);
 
 	const triggerAnimation = () => {
 		setShowCar(true);
@@ -95,6 +95,7 @@ function RouteComponent() {
 					defaultValue={defaultUsername}
 					{...register("username")}
 					required={true}
+					onChange={() => setDefaultUsername("")}
 				/>
 				{errors.username && (
 					<p className="text-red-500 font-mono text-sm">
