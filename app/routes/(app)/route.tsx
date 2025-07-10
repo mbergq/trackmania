@@ -38,7 +38,7 @@ function RouteComponent() {
 					<h1 className="text-2xl text-center font-extrabold mb-2">
 						Trackmania
 					</h1>
-					<nav className="flex justify-center gap-x-4">
+					<nav className="flex justify-center gap-x-4 font-mono">
 						<NavigationMenu>
 							<NavigationMenuList>
 								<NavigationMenuItem>

@@ -3,8 +3,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { setCookie } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { PASSCODE } from "@/constants";
-import { redirect } from "@tanstack/react-router";
-import { json } from "@tanstack/react-start";
 
 const data = z.object({
 	username: z.string(),

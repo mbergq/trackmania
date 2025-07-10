@@ -33,7 +33,7 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 					thumbnail_url,
 					timestamp,
 					created_at
-				FROM maps
+				FROM maps ORDER BY timestamp DESC
 			`)
 			.all() as DBMapsInfo;
 
@@ -64,6 +64,7 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 		}));
 
 	let rows = queryAllMaps();
+	console.log(rows);
 
 	const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -87,7 +88,7 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 		return updateDB();
 	}
 
-	// If database has not been updated for over a week, fetch and insert new records
+	// If database has not been updated for over a week, fetch records and update database
 	if (rows.length !== 0 && new Date(`${rows[0].created_at}Z`) <= sevenDaysAgo) {
 		console.log(
 			"--- Seven days since database was last updated, fetching and inserting new data...",
