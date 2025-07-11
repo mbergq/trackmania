@@ -25,30 +25,29 @@ export const setSessionFn = createServerFn({ method: "POST" })
 
 		let userId: string;
 
-		if (res.length !== 0) {
-			const storedHash = res[0].password;
-			const isValid = await Bun.password.verify(password, storedHash);
+		if (res.length === 0) {
+			return { success: false, error: "Invalid username" };
+		}
 
-			if (!isValid) {
-				return { success: false, error: "Invalid password or username" };
-			}
+		const storedHash = res[0].password;
+		const isValid = await Bun.password.verify(password, storedHash);
 
-			userId = res[0].id;
+		if (!isValid) {
+			return { success: false, error: "Invalid password" };
+		}
 
+		userId = res[0].id;
+
+		const existingSession = db
+			.query("SELECT id FROM session WHERE userId = ?")
+			.all(userId) as { id: string }[];
+
+		if (existingSession.length !== 0) {
 			db.run(
 				"UPDATE session SET id = ?, modified_at = CURRENT_TIMESTAMP WHERE userId = ?",
 				[sessionId, userId],
 			);
 		} else {
-			const passwordHash = await Bun.password.hash(password);
-			userId = crypto.randomUUID();
-
-			db.run("INSERT INTO app_user (id, name, password) VALUES (?, ?, ?)", [
-				userId,
-				username,
-				passwordHash,
-			]);
-
 			db.run("INSERT INTO session (id, userId) VALUES (?, ?)", [
 				sessionId,
 				userId,

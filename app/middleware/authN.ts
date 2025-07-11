@@ -5,7 +5,7 @@ import { z } from "zod";
 
 type Session = {
 	id: string;
-	username: string;
+	name: string;
 };
 
 const authN = createMiddleware().server(async ({ next }) => {
@@ -49,13 +49,15 @@ const authN = createMiddleware().server(async ({ next }) => {
 		});
 	}
 
-	const query = db.query("SELECT id, username FROM session WHERE id = ?");
+	const query = db.query(
+		"SELECT s.id, u.name FROM session s JOIN app_user u ON u.id = s.userId WHERE s.id = ?",
+	);
 	const result = query.all(sessionId) as unknown as Session[];
 
 	return await next({
 		context: {
 			isAuth: result.length > 0,
-			username: result.length > 0 ? result[0].username : "",
+			username: result.length > 0 ? result[0].name : "",
 		},
 	});
 });

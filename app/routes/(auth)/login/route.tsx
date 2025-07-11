@@ -15,12 +15,6 @@ import { useState } from "react";
 import tmCar from "@/assets/tm-car.svg";
 import { getUsernameFn } from "@/server/getUsername";
 
-type Inputs = {
-	username: string;
-	password: string;
-	passcode: string;
-};
-
 const schema = z.object({
 	username: z
 		.string()
@@ -46,6 +40,8 @@ const schema = z.object({
 		.length(8, "Passcode must be exactly 8 digits")
 		.regex(/^\d+$/, "Passcode must contain only digits"),
 });
+
+type Inputs = z.infer<typeof schema>;
 
 export const Route = createFileRoute("/(auth)/login")({
 	component: RouteComponent,
