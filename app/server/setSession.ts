@@ -17,31 +17,41 @@ export const setSessionFn = createServerFn({ method: "POST" })
 		if (passcode !== PASSCODE) {
 			return { success: false, error: "Invalid passcode" };
 		}
-
 		const res = db
-			.query("SELECT id, password FROM session WHERE username = ?")
+			.query("SELECT id, password FROM app_user WHERE name = ?")
 			.all(username) as { id: string; password: string }[];
 
 		const sessionId = crypto.randomUUID();
+
+		let userId: string;
 
 		if (res.length !== 0) {
 			const storedHash = res[0].password;
 			const isValid = await Bun.password.verify(password, storedHash);
 
 			if (!isValid) {
-				return { success: false, error: "Invalid password" };
+				return { success: false, error: "Invalid password or username" };
 			}
 
+			userId = res[0].id;
+
 			db.run(
-				"UPDATE session SET id = ?, modified_at = CURRENT_TIMESTAMP WHERE username = ?",
-				[sessionId, username],
+				"UPDATE session SET id = ?, modified_at = CURRENT_TIMESTAMP WHERE userId = ?",
+				[sessionId, userId],
 			);
 		} else {
 			const passwordHash = await Bun.password.hash(password);
-			db.run("INSERT INTO session (id, username, password) VALUES (?, ?, ?)", [
-				sessionId,
+			userId = crypto.randomUUID();
+
+			db.run("INSERT INTO app_user (id, name, password) VALUES (?, ?, ?)", [
+				userId,
 				username,
 				passwordHash,
+			]);
+
+			db.run("INSERT INTO session (id, userId) VALUES (?, ?)", [
+				sessionId,
+				userId,
 			]);
 		}
 
