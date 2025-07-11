@@ -47,7 +47,7 @@ const schema = z.object({
 		.regex(/^\d+$/, "Passcode must contain only digits"),
 });
 
-export const Route = createFileRoute("/auth/")({
+export const Route = createFileRoute("/(auth)/login")({
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
 		if (context.isAuth) {
