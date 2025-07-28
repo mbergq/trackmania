@@ -165,7 +165,7 @@ function RouteComponent() {
 				</button>
 			</form>
 			{showCar && (
-				<div className="fixed -translate-x-[122px] translate-y-[102px] pointer-events-none select-none">
+				<div className="fixed -translate-x-[122px] translate-y-[144px] pointer-events-none select-none">
 					<img
 						src={tmCar}
 						alt="Trackmania stadium car model"

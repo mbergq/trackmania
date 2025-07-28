@@ -53,7 +53,7 @@ export const MapModal: React.FC<Props> = ({ mapPromise, currentPage }) => {
 	const mapInfo = map.mapInfo.responseData;
 
 	return (
-		<div className="w-lg bg-tm-grey shadow-2xl h-96 fixed left-154 rounded-lg p-4 overflow-y-auto flex flex-col gap-y-2 border border-gray-300">
+		<div className="w-lg bg-tm-grey shadow-2xl h-96 fixed left-154 rounded-lg p-4 overflow-y-auto flex flex-col gap-y-2 border border-gray-400">
 			<SquareX
 				onClick={() =>
 					navigate({

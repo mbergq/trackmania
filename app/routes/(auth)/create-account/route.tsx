@@ -57,7 +57,10 @@ function RouteComponent() {
 
 	return (
 		<div className="flex justify-center items-center h-dvh">
-			<form className="flex flex-col gap-y-2" onSubmit={handleSubmit(onSubmit)}>
+			<form
+				className="flex flex-col gap-y-2 w-[288px]"
+				onSubmit={handleSubmit(onSubmit)}
+			>
 				<span className="text-white font-mono">Choose a username</span>
 				<Input
 					className="border-gray-800 bg-gray-700 text-tm-green"

@@ -91,7 +91,7 @@ export const getMapsFn = createServerFn({ method: "GET" }).handler(async () => {
 	// If database has not been updated for over a week, fetch records and update database
 	if (rows.length !== 0 && new Date(`${rows[0].created_at}Z`) <= sevenDaysAgo) {
 		console.log(
-			"--- Seven days since database was last updated, fetching and inserting new data...",
+			"--- More than seven days since database was last updated, fetching and inserting new data...",
 		);
 		return updateDB();
 	}
